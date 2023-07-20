@@ -3,7 +3,7 @@
  * Auto generated Run-Time-Environment Configuration File
  *      *** Do not modify ! ***
  *
- * Project: 'intro' 
+ * Project: 'structs' 
  * Target:  'STM32F407 Flash' 
  */
 
