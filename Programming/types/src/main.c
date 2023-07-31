@@ -1,13 +1,12 @@
 #include "Utils/utils.h"
+#include <stdio.h>
 
 int main(void) {
 	
 	configClock();
+	configUSART2(38400);
 	
-	unsigned int x = 42;
-	unsigned int y;
-	
-	y = x;
-	
+	printf("char: %d\r\n", sizeof(char));
+
 	while(1);
 }
