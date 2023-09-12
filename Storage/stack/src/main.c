@@ -7,9 +7,9 @@ int main(void) {
 	configUSART2(38400);
 		
 	// Array to hold stack entries
-	int stack[10];
-	// Stack pointer
-	int *stack_p = stack;
+	int32_t stack[10];
+	// Stack pointer, initially points to the first array element
+	int32_t *stack_p = stack;
 
 	// Finish this!
 }

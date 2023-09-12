@@ -2,8 +2,8 @@
 #include <stdio.h>
 
 typedef struct {
-	int x;
-	int y;
+	int8_t x;
+	int32_t y;
 } test_t;
 
 int main(void) {
@@ -11,5 +11,7 @@ int main(void) {
 	configClock();
 	configUSART2(38400);
 		
-	// Your code goes here
+	test_t test;
+
+	while(1);
 }
