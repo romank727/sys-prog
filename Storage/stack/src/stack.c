@@ -1,7 +1,9 @@
 #include "stack.h"
+#include <stdio.h>
 
 void push(int32_t **sp, int32_t value) {
-	// Finish this!
+	**sp = value;
+	*sp++;
 }
 
 int32_t pop(int **sp) {
