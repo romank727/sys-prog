@@ -3,10 +3,10 @@
 
 void push(int32_t **sp, int32_t value) {
 	**sp = value;
-	*sp++;
+	(*sp)++;
 }
 
 int32_t pop(int **sp) {
-	// Finish this!
-	return 0;
+	(*sp)--;
+	return **sp;
 }
