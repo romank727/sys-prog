@@ -1,7 +1,7 @@
 #include "Utils/utils.h"
 #include <stdio.h>
 #include <stdint.h>
-#include "stack.c"
+#include "stack.h"
 
 int main(void) {
 	
@@ -14,9 +14,6 @@ int main(void) {
 	int32_t *stack_p = stack;
 
 	push(&stack_p, 5);
-	push(&stack_p, 10);
-    push(&stack_p, -24);
-    printf("Popped value: %d\r\n", pop(&stack_p));
-	
+  printf("Popped value: %d\r\n", pop(&stack_p));
 	
 }
