@@ -1,7 +1,14 @@
 #include "heap.h"
 
 static void heap_up(heap_t *heap) {
-	// Write me!
+	// 1. Find last element in heap
+	
+		// 2. if root then stop
+	// 3. Compare with parent
+		// 4. if parent is <= then stop
+	// 5. swap the elements
+	
+	// go back to 2
 }
 
 static void heap_down(heap_t *heap) {
