@@ -8,5 +8,11 @@ static uint8_t static_pool[STATIC_ALLOC_POOLSIZE];
 static size_t pool_index = STATIC_ALLOC_POOLSIZE;
 
 void * static_alloc(size_t bytes) {
-	return 0;
+	if (pool_index >= bytes) {
+		pool_index -= bytes;
+		return &static_pool[pool_index];
+	}
+	else {
+		return 0;
+	}
 }
