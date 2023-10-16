@@ -27,10 +27,17 @@ Project File Date:  10/15/2023
 <h2>Output:</h2>
 *** Using Compiler 'V6.16', folder: 'c:\Keil_v5\ARM\ARMCLANG\Bin'
 Build target 'STM32F407 Flash'
-compiling static_alloc.c...
+src/main.c(21): warning: unused variable 'c' [-Wunused-variable]
+        uint32_t * c = static_alloc(3);
+                   ^
+src/main.c(22): warning: unused variable 'd' [-Wunused-variable]
+        uint32_t * d = static_alloc(11);
+                   ^
+2 warnings generated.
+compiling main.c...
 linking...
-Program Size: Code=11116 RO-data=1064 RW-data=116 ZI-data=18276  
-".\Objects\static.axf" - 0 Error(s), 0 Warning(s).
+Program Size: Code=11160 RO-data=1088 RW-data=116 ZI-data=18276  
+".\Objects\static.axf" - 0 Error(s), 2 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -63,10 +70,10 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.5.0
 
    * Component: Keil.ARM Compiler::Compiler:I/O:STDOUT:User:1.2.0
-      Source file:   Template\stdout_USART.c
-      Source file:   Source\retarget_io.c
       Source file:   Template\stdout_display.c
       Source file:   Template\stdout_user.c
+      Source file:   Template\stdout_USART.c
+      Source file:   Source\retarget_io.c
 
    * Component: Keil.ARM Compiler::Compiler:I/O:TTY:User:1.2.0
       Source file:   Template\tty_user.c
@@ -75,8 +82,8 @@ Package Vendor: Keil
    * Component: Keil::Device:Startup:2.6.3
       Source file:   MDK\Device\Source\ARM\STM32F4xx_OTP.s
       Source file:   Drivers\CMSIS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f407xx.s
-      Source file:   MDK\Device\Source\ARM\STM32F40xxx_41xxx_OPT.s
       Include file:  Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
+      Source file:   MDK\Device\Source\ARM\STM32F40xxx_41xxx_OPT.s
       Source file:   Drivers\CMSIS\Device\ST\STM32F4xx\Source\Templates\system_stm32f4xx.c
 Build Time Elapsed:  00:00:00
 </pre>
