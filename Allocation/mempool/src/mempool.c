@@ -14,10 +14,11 @@ void *pool_allocate(mempool_t *pool) {
 void pool_deallocate(mempool_t *pool, void *block) {
 	// Add the new item to the head of the list
 	/*
-		Store the previoud head before adding the new block.
+		Store the previous head before adding the new block.
 		When added into the pool, point to the old head.
 		Update the new head.
-	
+	*/
+	/*
 	same code as below: 
 	mempool_item_t * prevHead = pool->head;
 	((mempool_item_t*)block)->next = prevHead;
@@ -26,4 +27,8 @@ void pool_deallocate(mempool_t *pool, void *block) {
 	mempool_item_t * item = block;
 	item->next = pool->head;
 	pool->head = item;
+}
+
+void pool_init(mempool_t *pool, size_t blocksize, size_t blocks) {
+	
 }
