@@ -43,10 +43,10 @@ void pool_init(mempool_t *pool, size_t blocksize, size_t blocks) {
 	if (totalMemPtr == 0) {
 		pool->head = 0;
 	}
-	uint32_t * addressPtr = (uint32_t *) totalMemPtr;
+	uint8_t * addressPtr = (uint8_t *) totalMemPtr;
 	// A loop for each block with its own start address
 	for (size_t i = 0; i < blocks; ++i) {
-		void * address = addressPtr + (i * blocksize);
-		pool_add(pool, address);
+		void * startAddress = addressPtr + (i * blocksize);
+		pool_add(pool, startAddress);
 	}
 }
