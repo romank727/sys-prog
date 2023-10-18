@@ -30,23 +30,19 @@ void pool_deallocate(mempool_t *pool, void *block) {
 }
 
 void pool_init(mempool_t *pool, size_t blocksize, size_t blocks) {
-	// Rounding up.
-	uint32_t remainder = blocksize % STATIC_ALLOC_ALIGNMENT;
-	if (remainder != 0) {
-		// Finding how many bytes are missing and adding them to align.
-		blocksize += STATIC_ALLOC_ALIGNMENT - remainder;
-	}
+	// Rounding up so it aligns with static_alloc
+	blocksize = (blocksize + 7) & STATIC_ALLOC_MASK;
 	// Total memory needed
-	size_t totalMem = blocks * blocksize;
-	// Statically allocate total memory
-	void * totalMemPtr = static_alloc(totalMem);
-	if (totalMemPtr == 0) {
-		pool->head = 0;
+	void * totalMemPtr = static_alloc(blocks * blocksize);
+	// if totalMemPtr is a non-zero...
+	if (totalMemPtr) {
+			// A loop for each block with its own start address
+			for (size_t i = 0; i < blocks; i++) {
+				void * startAddress = ((uint8_t *)totalMemPtr) + (i * blocksize);
+				pool_add(pool, startAddress);
+			}
 	}
-	uint8_t * addressPtr = (uint8_t *) totalMemPtr;
-	// A loop for each block with its own start address
-	for (size_t i = 0; i < blocks; ++i) {
-		void * startAddress = addressPtr + (i * blocksize);
-		pool_add(pool, startAddress);
+	else {
+		pool->head = 0;
 	}
 }
