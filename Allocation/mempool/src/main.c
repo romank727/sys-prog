@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <string.h>
-
 #include "mempool.h"
 
 /* Example data packet structure, just for demonstration purposes */
@@ -18,11 +17,11 @@ int main(void) {
 
 	/* Declare and intialise a memory pool */
 	static mempool_t pool = MEMPOOL_INITIALISER;
-//	static packet_t poolElements[10];
+	static packet_t poolElements[10];
 
-//	for (int i = 0; i < 10; ++i) {
-//		pool_add(&pool, &poolElements[i]);
-//	}
+	for (int i = 0; i < 10; ++i) {
+		pool_add(&pool, &poolElements[i]);
+	}
 	
 	/* Example use of the pool */
 	
@@ -52,6 +51,13 @@ int main(void) {
 
 	printf("Third allocated packet (id %" PRIu32 ", data '%s') at address %p\r\n", p3->id, p3->data, (void *)p3);
 	printf("Fourth allocated packet (id %" PRIu32 ", data '%s') at address %p\r\n", p4->id, p4->data, (void *)p4);
+	
+//	struct packet_t* debug_ptr = (void *)p1;
+//	struct packet_t* debug_ptr2 = (void *)p2;
+//	struct packet_t* debug_ptr3 = (void *)p3;
+//	struct packet_t* debug_ptr4 = (void *)p4;
+//	printf("bruh\r\n");
+	
 
 	while(1);
 }
