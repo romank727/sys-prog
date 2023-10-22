@@ -1,0 +1,148 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000                 AREA             storage,DATA
+    2 00000000         array
+    3 00000000 00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00            SPACE            4*20        ; Declares a 20-wor
+                                                            d storage area
+    4 00000050         array_end
+    5 00000050         
+    6 00000050                 AREA             mainarea,CODE
+    7 00000000                 EXPORT           asm_main
+    8 00000000         asm_main
+    9 00000000         ; Your code goes here
+   10 00000000         
+   11 00000000 4806            LDR              r0, =array
+   12 00000002 4907            LDR              r1, =array_end
+   13 00000004         
+   14 00000004 F04F 0201       MOV              r2, #1
+   15 00000008 F04F 0301       MOV              r3, #1
+   16 0000000C         
+   17 0000000C         loop
+   18 0000000C F840 2B04       STR              r2, [r0], #4 ; 1,   1, 2,  1, 2
+                                                            , 3, 1, 2, 3, 5,  1
+                                                            , 2, 3, 5, 8,  1, 2
+                                                            , 3, 5, 8, 13,    .
+                                                            ....
+   19 00000010 4614            MOV              r4, r2      ; r4 = 1 r4 = 2 r4 
+                                                            = 3  r4 = 5   r4 = 
+                                                            8    r4 = 13
+   20 00000012 441A            ADD              r2, r3      ; r2 = 2 r2 = 3 r2 
+                                                            = 5  r2 = 8   r2 = 
+                                                            13    r2 = 21
+   21 00000014 4623            MOV              r3, r4      ; r3 = 1 r3 = 2 r3 
+                                                            = 3  r3 = 5   r3 = 
+                                                            8    r3 = 13
+   22 00000016 4281            CMP              r1, r0
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   23 00000018 D2F8            BHS              loop
+   24 0000001A         
+   25 0000001A E7FE            B                .           ; Loop forever
+   26 0000001C         
+   27 0000001C                 ALIGN
+   28 0000001C                 END
+              00000000 
+              00000000 
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp.sp --depen
+d=.\objects\main.d -o.\objects\main.o -I.\RTE\_STM32F407_Flash -IC:\KEIL_V5\ARM
+\PACK\ARM\CMSIS\5.8.0\CMSIS\Core\Include -IC:\KEIL_V5\ARM\PACK\Keil\STM32F4xx_D
+FP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include --predefine="__UVISION_VERS
+ION SETA 535" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --pre
+define="_RTE_ SETA 1" --list=.\listings\main.lst asm\main.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+array 00000000
+
+Symbol: array
+   Definitions
+      At line 2 in file asm\main.s
+   Uses
+      At line 11 in file asm\main.s
+Comment: array used once
+array_end 00000050
+
+Symbol: array_end
+   Definitions
+      At line 4 in file asm\main.s
+   Uses
+      At line 12 in file asm\main.s
+Comment: array_end used once
+storage 00000000
+
+Symbol: storage
+   Definitions
+      At line 1 in file asm\main.s
+   Uses
+      None
+Comment: storage unused
+3 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+asm_main 00000000
+
+Symbol: asm_main
+   Definitions
+      At line 8 in file asm\main.s
+   Uses
+      At line 7 in file asm\main.s
+Comment: asm_main used once
+loop 0000000C
+
+Symbol: loop
+   Definitions
+      At line 17 in file asm\main.s
+   Uses
+      At line 23 in file asm\main.s
+Comment: loop used once
+mainarea 00000000
+
+Symbol: mainarea
+   Definitions
+      At line 6 in file asm\main.s
+   Uses
+      None
+Comment: mainarea unused
+3 symbols
+342 symbols in table
