@@ -7,9 +7,13 @@ asm_main
 loop
 	ADD	r0, #1
 	ADD	r1, r0
+	; compare r0 to 10
 	CMP	r0, #10
+	; if r0 is less than 10, branch back to loop
 	BLT loop
-
+	; r0 goes from 0 to 9 inclusive
+	; r1 sums up to 45
+	
 	B .			; Loop forever
 
 	END
