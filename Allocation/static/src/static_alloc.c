@@ -14,7 +14,7 @@ void * static_alloc(size_t bytes) {
 	if (pool_index >= bytes) {
 		pool_index -= bytes;
 		pool_index &= STATIC_ALLOC_MASK;
-		printf("static pool: %#04x\r\n", pool_index);
+		printf("static pool: %#08x\r\n", pool_index);
 		return static_pool + pool_index;
 	}
 	return 0;

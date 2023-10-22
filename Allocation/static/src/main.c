@@ -11,7 +11,7 @@ int main(void) {
 
 	// Array lengths
 	uint_fast8_t len_a = 10;
-	uint_fast8_t len_b = 12;
+	uint_fast8_t len_b = 13;
 	
 	// Arrays
 	//uint32_t a[len_a];
