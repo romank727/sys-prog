@@ -38,54 +38,95 @@ ARM Macro Assembler    Page 1
     5 00000050         
     6 00000050                 AREA             mainarea,CODE
     7 00000000                 EXPORT           asm_main
-    8 00000000         asm_main
-    9 00000000 4807            LDR              r0, =array
-   10 00000002 4908            LDR              r1, =array_end
-   11 00000004         
-   12 00000004 F04F 0201       MOV              r2, #1
-   13 00000008 F04F 0301       MOV              r3, #1
-   14 0000000C         
-   15 0000000C         loop
-   16 0000000C 4288            CMP              r0, r1
-   17 0000000E D205            BHS              end_loop    ; branch to end if 
-                                                            r0 >= r1
-   18 00000010         
-   19 00000010 F840 2B04       STR              r2, [r0], #4 ; 1,   1, 2,  1, 2
-                                                            , 3, 1, 2, 3, 5,  1
-                                                            , 2, 3, 5, 8,  1, 2
-                                                            , 3, 5, 8, 13,    .
-                                                            ....
-   20 00000014 4614            MOV              r4, r2      ; r4 = 1 r4 = 2 r4 
-                                                            = 3  r4 = 5   r4 = 
-                                                            8    r4 = 13
-   21 00000016 441A            ADD              r2, r3      ; r2 = 2 r2 = 3 r2 
-                                                            = 5  r2 = 8   r2 = 
-                                                            13    r2 = 21
-   22 00000018 4623            MOV              r3, r4      ; r3 = 1 r3 = 2 r3 
-                                                            = 3  r3 = 5   r3 = 
+    8 00000000         
+    9 00000000         ; check if required amount of fib numbers needed is even
+                        or odd using bit mask or sumn (change 20 to some other 
+                       number)
+   10 00000000         ; if required is even -> proceed with loop that finds 2 
+                       fib numbers and stores them
+   11 00000000         ; if required is odd -> calc the first fib number outsid
+                       e the loop and then branch to the usual loop
+   12 00000000         
+   13 00000000         
+   14 00000000         asm_main
+   15 00000000 4808            LDR              r0, =array  ;
+   16 00000002 4909            LDR              r1, =array_end
+   17 00000004         
+   18 00000004         ; Calculate the total number of elements
+   19 00000004 EBA1 0200       SUB              r2, r1, r0  ; r2 = array_end - 
+                                                            array
+   20 00000008 EA4F 0292       LSR              r2, r2, #2  ; r2 = r2 / 4 (sinc
+                                                            e each element is 4
+                                                             bytes)
+   21 0000000C         
+   22 0000000C         ; Check if the total count is even or odd
+   23 0000000C F002 0301       AND              r3, r2, #1  ; r3 = r2 % 2 (usin
+                                                            g bitwise AND to ch
+                                                            eck the least signi
 
 
 
 ARM Macro Assembler    Page 2 
 
 
-                                                            8    r3 = 13
-   23 0000001A         
-   24 0000001A E7F7            B                loop
-   25 0000001C         end_loop
-   26 0000001C         
-   27 0000001C E7FE            B                .           ; Loop forever
-   28 0000001E         
-   29 0000001E 00 00           ALIGN
-   30 00000020                 END
+                                                            ficant bit)
+   24 00000010         
+   25 00000010 F04F 0401       MOV              r4, #1
+   26 00000014 F04F 0501       MOV              r5, #1
+   27 00000018         
+   28 00000018         ; Handle the odd case: Store just the first Fibonacci nu
+                       mber
+   29 00000018 2B01            CMP              r3, #1
+   30 0000001A BF04 F840 
+              4B04             STREQ            r4, [r0], #4
+   31 00000020 1E52            SUBEQ            r2, r2, #1  ; Reduce the total 
+                                                            count by 1
+   32 00000022         
+   33 00000022         loop
+   34 00000022         
+   35 00000022         
+   36 00000022         
+   37 00000022         
+   38 00000022         end_loop
+   39 00000022         
+   40 00000022         
+   41 00000022         
+   42 00000022         
+   43 00000022         ; LDR r0, =array
+   44 00000022         ; LDR r1, =array_end
+   45 00000022         ; 
+   46 00000022         ; MOV r2, #1
+   47 00000022         ; MOV r3, #1
+   48 00000022         
+   49 00000022         ;loop
+   50 00000022         ; CMP r0, r1
+   51 00000022         ; BHS end_loop  ; branch to end if r0 >= r1
+   52 00000022         
+   53 00000022         ; STR r2, [r0], #4 ; 1,   1, 2,  1, 2, 3, 1, 2, 3, 5,  1
+                       , 2, 3, 5, 8,  1, 2, 3, 5, 8, 13,    .....
+   54 00000022         ; MOV r4, r2   ; r4 = 1 r4 = 2 r4 = 3  r4 = 5   r4 = 8  
+                         r4 = 13
+   55 00000022         ; ADD r2, r3   ; r2 = 2 r2 = 3 r2 = 5  r2 = 8   r2 = 13 
+                          r2 = 21
+   56 00000022         ; MOV r3, r4   ; r3 = 1 r3 = 2 r3 = 3  r3 = 5   r3 = 8  
+                         r3 = 13
+   57 00000022         ; 
+   58 00000022         ; B loop
+   59 00000022         ;end_loop
+   60 00000022         
+   61 00000022 E7FE            B                .           ; Loop forever
+   62 00000024         
+   63 00000024                 ALIGN
+   64 00000024                 END
               00000000 
               00000000 
-Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp.sp --depen
-d=.\objects\main.d -o.\objects\main.o -I.\RTE\_STM32F407_Flash -IC:\KEIL_V5\ARM
-\PACK\ARM\CMSIS\5.8.0\CMSIS\Core\Include -IC:\KEIL_V5\ARM\PACK\Keil\STM32F4xx_D
-FP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include --predefine="__UVISION_VERS
-ION SETA 535" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --pre
-define="_RTE_ SETA 1" --list=.\listings\main.lst asm\main.s
+Command Line: --debug --xref --diag_suppress=9931,A1950W --cpu=Cortex-M4.fp.sp 
+--depend=.\objects\main.d -o.\objects\main.o -I.\RTE\_STM32F407_Flash -IC:\User
+s\Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include -IC:\Users\R
+oman\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device\ST\
+STM32F4xx\Include --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SE
+TA 538" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --predefine
+="_RTE_ SETA 1" --list=.\listings\main.lst asm\main.s
 
 
 
@@ -98,7 +139,7 @@ Symbol: array
    Definitions
       At line 2 in file asm\main.s
    Uses
-      At line 9 in file asm\main.s
+      At line 15 in file asm\main.s
 Comment: array used once
 array_end 00000050
 
@@ -106,7 +147,7 @@ Symbol: array_end
    Definitions
       At line 4 in file asm\main.s
    Uses
-      At line 10 in file asm\main.s
+      At line 16 in file asm\main.s
 Comment: array_end used once
 storage 00000000
 
@@ -127,26 +168,26 @@ asm_main 00000000
 
 Symbol: asm_main
    Definitions
-      At line 8 in file asm\main.s
+      At line 14 in file asm\main.s
    Uses
       At line 7 in file asm\main.s
 Comment: asm_main used once
-end_loop 0000001C
+end_loop 00000022
 
 Symbol: end_loop
    Definitions
-      At line 25 in file asm\main.s
+      At line 38 in file asm\main.s
    Uses
-      At line 17 in file asm\main.s
-Comment: end_loop used once
-loop 0000000C
+      None
+Comment: end_loop unused
+loop 00000022
 
 Symbol: loop
    Definitions
-      At line 15 in file asm\main.s
+      At line 33 in file asm\main.s
    Uses
-      At line 24 in file asm\main.s
-Comment: loop used once
+      None
+Comment: loop unused
 mainarea 00000000
 
 Symbol: mainarea
@@ -156,4 +197,4 @@ Symbol: mainarea
       None
 Comment: mainarea unused
 4 symbols
-343 symbols in table
+344 symbols in table
