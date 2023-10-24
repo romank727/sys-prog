@@ -1,47 +1,39 @@
 	AREA storage,DATA
 array
-	SPACE 4*20	; Declares a 20-word storage area
+	SPACE 4*25	; Declares a 20-word storage area
 array_end
 
 	AREA mainarea,CODE
 	EXPORT asm_main
 
-; check if required amount of fib numbers needed is even or odd using bit mask or sumn (change 20 to some other number)
-; if required is even -> proceed with loop that finds 2 fib numbers and stores them
-; if required is odd -> calc the first fib number outside the loop and then branch to the usual loop
-
-
 asm_main
 	LDR r0, =array;
 	LDR r1, =array_end
 	
-	; required num of fib numbers
-    SUB r2, r1, r0  ; r2 = array_end - array
-    LSR r2, r2, #2  ; each fib number is 4 bytes, so r2/4
+	MOV r2, #1
+	MOV r3, #1
 	
-	; even or odd
-    AND r3, r2, #1  ; r3 = r2 % 2
+	BL loop
 	
-	; store the first '1'
-    MOV r4, #1
-    STR r4, [r0], #4
-	
-    ; if total is odd, store the second '1'
-    CMP r3, #1
-	MOVEQ r5, #1
-    STREQ r5, [r0], #4
-	
-	
+	B .			; Loop forever
 	
 loop
+	STR r2, [r0], #4
+	CMP r0, r1
+	BXHS lr				; branch to link reg
 	
+	STR r3, [r0], #4
+	CMP r0, r1
+	BXHS lr
 	
+	ADD r2, r2, r3
+	ADD r3, r3, r2
 	
-	
+	B loop
 end_loop
 	
 	
-	
+	; Single digit fibonacci
 	
 ;	LDR r0, =array
 ;	LDR r1, =array_end
