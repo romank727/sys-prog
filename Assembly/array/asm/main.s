@@ -8,14 +8,9 @@ array_end
 	EXPORT asm_main
 asm_main
 	; Your code goes here
-	MOV r0, -5
-	BL abs
+
+ 
 	B .			; Loop forever
 
-abs
-	CMP r0, #0
-	RSBLE r0, r0, #0
-	BX lr
-	
 	ALIGN
 	END
