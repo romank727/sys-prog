@@ -6,6 +6,7 @@ array_end
 	AREA main,CODE
 	EXPORT asm_main
 asm_main
+<<<<<<< HEAD
 	LDR r0, =array
 	LDR r1, =array_end
 	MOV r2, #0
@@ -26,6 +27,12 @@ mod
 	RSBLE r3, r3, #0
 	BX lr
 end_mod
+=======
+	; Your code goes here
+
+ 
+	B .			; Loop forever
+>>>>>>> 636612f05527fd6df80fef13f2ebb96646dc3435
 
 	ALIGN
 	END
