@@ -1,0 +1,85 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000                 AREA             mainarea,CODE
+    2 00000000                 EXPORT           fib
+    3 00000000         
+    4 00000000         fib
+    5 00000000 B502            PUSH             {R1, LR}    ; Save R1 and LR
+    6 00000002         
+    7 00000002         ; Check for base cases
+    8 00000002 2801            CMP              R0, #1
+    9 00000004 D00E            BEQ              base_case
+   10 00000006 2802            CMP              R0, #2
+   11 00000008 D00C            BEQ              base_case
+   12 0000000A         
+   13 0000000A         ; Recursive case: calculate fib(n-1)
+   14 0000000A B401            PUSH             {R0}        ; Save R0
+   15 0000000C 1E40            SUBS             R0, R0, #1
+   16 0000000E F7FF FFFE       BL               fib
+   17 00000012 4601            MOV              R1, R0      ; Save the result i
+                                                            n R1
+   18 00000014         
+   19 00000014         ; Recursive case: calculate fib(n-2)
+   20 00000014 BC01            POP              {R0}        ; Restore R0
+   21 00000016 1E80            SUBS             R0, R0, #2
+   22 00000018 F7FF FFFE       BL               fib
+   23 0000001C         
+   24 0000001C         ; Sum fib(n-1) and fib(n-2) to get fib(n)
+   25 0000001C 4408            ADD              R0, R0, R1
+   26 0000001E         
+   27 0000001E         ; Pop saved registers and return
+   28 0000001E E8BD 4002       POP              {R1, LR}
+   29 00000022 4770            BX               LR
+   30 00000024         
+   31 00000024         base_case
+   32 00000024         ; Base case: return 1
+   33 00000024 F04F 0001       MOV              R0, #1
+   34 00000028 E8BD 4002       POP              {R1, LR}
+   35 0000002C 4770            BX               LR
+   36 0000002E         
+   37 0000002E                 END
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp.sp --depen
+d=.\objects\fibonacci.d -o.\objects\fibonacci.o -I.\RTE\_STM32F407_Flash -IC:\K
+EIL_V5\ARM\PACK\ARM\CMSIS\5.8.0\CMSIS\Core\Include -IC:\KEIL_V5\ARM\PACK\Keil\S
+TM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include --predefine="__UV
+ISION_VERSION SETA 535" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SET
+A 1" --predefine="_RTE_ SETA 1" --list=.\listings\fibonacci.lst asm\fibonacci.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+base_case 00000024
+
+Symbol: base_case
+   Definitions
+      At line 31 in file asm\fibonacci.s
+   Uses
+      At line 9 in file asm\fibonacci.s
+      At line 11 in file asm\fibonacci.s
+
+fib 00000000
+
+Symbol: fib
+   Definitions
+      At line 4 in file asm\fibonacci.s
+   Uses
+      At line 2 in file asm\fibonacci.s
+      At line 16 in file asm\fibonacci.s
+      At line 22 in file asm\fibonacci.s
+
+mainarea 00000000
+
+Symbol: mainarea
+   Definitions
+      At line 1 in file asm\fibonacci.s
+   Uses
+      None
+Comment: mainarea unused
+3 symbols
+337 symbols in table

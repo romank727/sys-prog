@@ -1,11 +1,12 @@
 	AREA mainarea,CODE
+	IMPORT fib
 	EXPORT asm_main
 
 asm_main
 
-	; Your call to 'fib' goes here
-
-	B .			; Loop forever
+	MOV r0, #7  ; Input Fibonacci index
+	BL fib      ; Call fib function
+	B .         ; Loop forever
 
 	ALIGN
 	END
