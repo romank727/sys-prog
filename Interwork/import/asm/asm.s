@@ -3,8 +3,8 @@
 	EXPORT fib
 		
 fib
-	STMFD sp!, {r4, lr}
-	MOV r4, #0			; first 2 fib numbers
+	STMFD sp!, {r4-r8, lr}
+	MOV r4, #1			; first 2 fib numbers
 	MOV r5, #1
 	MOV r8, r0			; counter, r8 = 20
 	
@@ -23,6 +23,6 @@ loop
 	B loop
 loop_end
 
-	LDMFD sp!, {r4, pc}
+	LDMFD sp!, {r4-r8, pc}
 
 	END
