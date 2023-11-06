@@ -42,12 +42,13 @@ ARM Macro Assembler    Page 1
    35 0000002C 4770            BX               LR
    36 0000002E         
    37 0000002E                 END
-Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp.sp --depen
-d=.\objects\fibonacci.d -o.\objects\fibonacci.o -I.\RTE\_STM32F407_Flash -IC:\K
-EIL_V5\ARM\PACK\ARM\CMSIS\5.8.0\CMSIS\Core\Include -IC:\KEIL_V5\ARM\PACK\Keil\S
-TM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include --predefine="__UV
-ISION_VERSION SETA 535" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SET
-A 1" --predefine="_RTE_ SETA 1" --list=.\listings\fibonacci.lst asm\fibonacci.s
+Command Line: --debug --xref --diag_suppress=9931,A1950W --cpu=Cortex-M4.fp.sp 
+--depend=.\objects\fibonacci.d -o.\objects\fibonacci.o -I.\RTE\_STM32F407_Flash
+ -IC:\Users\Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include -I
+C:\Users\Roman\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\
+Device\ST\STM32F4xx\Include --predefine="__EVAL SETA 1" --predefine="__UVISION_
+VERSION SETA 538" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" -
+-predefine="_RTE_ SETA 1" --list=.\listings\fibonacci.lst asm\fibonacci.s
 
 
 
@@ -82,4 +83,4 @@ Symbol: mainarea
       None
 Comment: mainarea unused
 3 symbols
-337 symbols in table
+338 symbols in table

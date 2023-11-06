@@ -1,0 +1,99 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000                 AREA             mainarea,CODE
+    2 00000000                 IMPORT           report
+    3 00000000                 EXPORT           fib
+    4 00000000         
+    5 00000000         fib
+    6 00000000 B510            STMFD            sp!, {r4, lr}
+    7 00000002 F04F 0400       MOV              r4, #0      ; first 2 fib numbe
+                                                            rs
+    8 00000006 F04F 0501       MOV              r5, #1
+    9 0000000A 4680            MOV              r8, r0      ; counter, r8 = 20
+   10 0000000C         
+   11 0000000C         loop
+   12 0000000C F1B8 0F00       CMP              r8, #0
+   13 00000010 D909            BLS              loop_end
+   14 00000012 F1A8 0801       SUB              r8, r8, #1
+   15 00000016         
+   16 00000016 4620            MOV              r0, r4
+   17 00000018 F7FF FFFE       BL               report
+   18 0000001C         
+   19 0000001C EB04 0605       ADD              r6, r4, r5  ; Find new fib numb
+                                                            er
+   20 00000020 462C            MOV              r4, r5      ; Update the previo
+                                                            us 2 fib numbers
+   21 00000022 4635            MOV              r5, r6
+   22 00000024         
+   23 00000024 E7F2            B                loop
+   24 00000026         loop_end
+   25 00000026         
+   26 00000026 BD10            LDMFD            sp!, {r4, pc}
+   27 00000028         
+   28 00000028                 END
+Command Line: --debug --xref --diag_suppress=9931,A1950W --cpu=Cortex-M4.fp.sp 
+--depend=.\objects\asm.d -o.\objects\asm.o -I.\RTE\_STM32F407_Flash -IC:\Users\
+Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include -IC:\Users\Rom
+an\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device\ST\ST
+M32F4xx\Include --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA
+ 538" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --predefine="
+_RTE_ SETA 1" --list=.\listings\asm.lst asm\asm.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+fib 00000000
+
+Symbol: fib
+   Definitions
+      At line 5 in file asm\asm.s
+   Uses
+      At line 3 in file asm\asm.s
+Comment: fib used once
+loop 0000000C
+
+Symbol: loop
+   Definitions
+      At line 11 in file asm\asm.s
+   Uses
+      At line 23 in file asm\asm.s
+Comment: loop used once
+loop_end 00000026
+
+Symbol: loop_end
+   Definitions
+      At line 24 in file asm\asm.s
+   Uses
+      At line 13 in file asm\asm.s
+Comment: loop_end used once
+mainarea 00000000
+
+Symbol: mainarea
+   Definitions
+      At line 1 in file asm\asm.s
+   Uses
+      None
+Comment: mainarea unused
+4 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+External symbols
+
+report 00000000
+
+Symbol: report
+   Definitions
+      At line 2 in file asm\asm.s
+   Uses
+      At line 17 in file asm\asm.s
+Comment: report used once
+1 symbol
+340 symbols in table
