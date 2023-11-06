@@ -1,0 +1,49 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000                 AREA             mainarea,CODE
+    2 00000000                 EXPORT           calculate
+    3 00000000         
+    4 00000000         calculate
+    5 00000000 B510            STMFD            sp!, {r4, lr}
+    6 00000002 EA4F 0280       MOV              r2, r0, LSL #2
+    7 00000006 4402            ADD              r2, r2, r0
+    8 00000008 EB02 0001       ADD              r0, r2, r1
+    9 0000000C BD10            LDMFD            sp!, {r4, pc}
+   10 0000000E         
+   11 0000000E         
+   12 0000000E                 END
+Command Line: --debug --xref --diag_suppress=9931,A1950W --cpu=Cortex-M4.fp.sp 
+--depend=.\objects\asm.d -o.\objects\asm.o -I.\RTE\_STM32F407_Flash -IC:\Users\
+Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include -IC:\Users\Rom
+an\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device\ST\ST
+M32F4xx\Include --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA
+ 538" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --predefine="
+_RTE_ SETA 1" --list=.\listings\asm.lst asm\asm.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+calculate 00000000
+
+Symbol: calculate
+   Definitions
+      At line 4 in file asm\asm.s
+   Uses
+      At line 2 in file asm\asm.s
+Comment: calculate used once
+mainarea 00000000
+
+Symbol: mainarea
+   Definitions
+      At line 1 in file asm\asm.s
+   Uses
+      None
+Comment: mainarea unused
+2 symbols
+337 symbols in table
