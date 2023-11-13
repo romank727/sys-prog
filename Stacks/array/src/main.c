@@ -8,9 +8,15 @@ static void test(void) {
 int main(void) {
 	configClock();
 	configUSART2(38400);
-
+	
 	uint32_t array[10];
 	
-	// First try overflowing the stack with garbage and see what happens
-	// Then try to overwrite the link register here so that test() is run
+	uint32_t * ptr = array;
+	
+	for (uint32_t i = 0; i < 10; i++) {
+		*(ptr+i) = i;
+	}
+	
+	*(ptr+11) = (uint32_t)(&test);
+	
 }
