@@ -17,6 +17,6 @@ int main(void) {
 		*(ptr+i) = i;
 	}
 	
-	*(ptr+11) = (uint32_t)(&test);
+	*(ptr+12) = (uint32_t)(&test);
 	
 }
