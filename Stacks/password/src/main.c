@@ -18,6 +18,7 @@ int main(void) {
 	  0x080002D3: can be found just after PUSH and SUBS instructions are executed (main function) in the debugger memory watch window
 	  0x080023C0: found in the debugger as well
 	
+		\x - escape character for HEX (whatever is after is in HEX)
 		\xFF - easy readable memory address (can't just do \xTG, because that won't exist in memory)
 		\xC0 -> \xC1 - have to account for the Thumb bit, therefore just add a bit to the byte address
 		\x00 - this is the null terminator of the string. Added this in intentionally.
