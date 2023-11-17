@@ -56,7 +56,6 @@ void _OS_taskExit_delegate(void);
 
 /* Constants that define bits in a thread's 'state' field. */
 #define TASK_STATE_YIELD    (1UL << 0) // Bit zero is the 'yield' flag
-#define TASK_STATE_WAIT     (2UL << 0) // Bit one is the 'wait' flag
 
 #endif /* os_internal */
 
