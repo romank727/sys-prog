@@ -8,7 +8,6 @@ static void task1(void const *const args) {
 	}
 }
 
-__attribute__((noreturn))
 static void task2(void const *const args) {
 	while (1) {
 		printf("BBBBBBBB");
