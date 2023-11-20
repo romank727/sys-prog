@@ -1,6 +1,8 @@
 #include "OS/os.h"
 #include "Utils/utils.h"
+#include "Mode_Utils/mode_utils.h"
 #include <stdio.h>
+#include <inttypes.h>
 
 static void task1(void const *const args) {
 	(void) args;
@@ -49,6 +51,8 @@ int main(void) {
 	
 	/* Add the tasks to the scheduler */
 	
+	printf("\r\nCONTROL: %" PRIu32 "\r\n", getCONTROL());
+	
 	OS_addTask(&TCB1);
 	OS_addTask(&TCB2);
 	OS_addTask(&TCB3);
@@ -56,5 +60,6 @@ int main(void) {
 	/* Start the OS */
 	
 	OS_start();
+	
 	
 }
