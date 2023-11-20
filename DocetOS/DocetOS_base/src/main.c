@@ -6,7 +6,9 @@
 
 static void task1(void const *const args) {
 	(void) args;
-	for (uint_fast16_t i = 0; i < 1000; ++i) {
+	
+	reportState();
+	for (uint_fast16_t i = 0; i < 10; ++i) {
 		printf("AAAAAAAA");
 	}
 }
@@ -51,7 +53,7 @@ int main(void) {
 	
 	/* Add the tasks to the scheduler */
 	
-	printf("\r\nCONTROL: %" PRIu32 "\r\n", getCONTROL());
+	reportState();
 	
 	OS_addTask(&TCB1);
 	OS_addTask(&TCB2);
@@ -60,6 +62,5 @@ int main(void) {
 	/* Start the OS */
 	
 	OS_start();
-	
 	
 }
