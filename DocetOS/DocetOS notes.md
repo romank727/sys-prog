@@ -8,19 +8,20 @@
     1.  MSP (main stack pointer)
     2.  PSP (process stack pointer)
 
--   Reading r13 always reads or writes to MSP or PSP *Handler mode
-    always uses the MSP* *Thread mode often uses the PSP*
+-   Reading r13 always reads or writes to MSP or PSP
+-   *Handler mode  always uses the MSP* 
+*Thread mode often uses the PSP*
 
     1.  MRS (move Register from Special) instruction
 
-    2.  MSR (move Special from Register) instruction *MRS and MSR mostly
-        used in priviliged mode*
+    2.  MSR (move Special from Register) instruction
+       *MRS and MSR mostly used in priviliged mode*
 
-    3.  PSR (processor status register) look-up documentation *remember
-        the thumb bit*
+    4.  PSR (processor status register) look-up documentation
+       *remember the thumb bit*
 
-*CONTROL register (3 active bits)* 1. nPRIV bit: if 
-1, thread-mode code will run without privilege 
+*CONTROL register (3 active bits)* 
+1. nPRIV bit: if 1, thread-mode code will run without privilege 
 2. SPSEL bit: if 1, the PSP is in use 
 3. FPCA bit: enables the FPU
 
@@ -31,11 +32,11 @@ On entry to an interrupt:
 3. CPU enters privileged handler more and selects the MSP  
 4. Execution of the ISR begins
 
-ISRs can be interrupted by other higher priority interrupts *Highest
-priority handler is the hard fault*
+ISRs can be interrupted by other higher priority interrupts 
+*Highest priority handler is the hard fault*
 
-At the end of an ISR, a BX lr instruction is executed The special return
-code in lr causes the CPU to: 
+At the end of an ISR, a BX lr instruction is executed 
+The special return code in lr causes the CPU to: 
 1. select the correct stack 
 2. pop r0-r3, r12, lr, pc and PSR *Popping PSR restores the privilege level and mode*
 
