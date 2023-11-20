@@ -8,8 +8,8 @@
     1.  MSP (main stack pointer)
     2.  PSP (process stack pointer)
 
--   Reading r13 always reads or writes to MSP or PSP *Handler mode
-    always uses the MSP* *Thread mode often uses the PSP*
+-   Reading r13 always reads or writes to MSP or PSP
+-   *Handler mode  always uses the MSP* *Thread mode often uses the PSP*
 
     1.  MRS (move Register from Special) instruction
 
