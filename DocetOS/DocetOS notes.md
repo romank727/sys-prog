@@ -19,8 +19,8 @@
     3.  PSR (processor status register) look-up documentation *remember
         the thumb bit*
 
-*CONTROL register (3 active bits)* 1. nPRIV bit: if 
-1, thread-mode code will run without privilege 
+*CONTROL register (3 active bits)* 
+1. nPRIV bit: if 1, thread-mode code will run without privilege 
 2. SPSEL bit: if 1, the PSP is in use 
 3. FPCA bit: enables the FPU
 
