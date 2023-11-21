@@ -6,10 +6,11 @@
 
 static void task1(void const *const args) {
 	(void) args;
-	
-	reportState();
-	for (uint_fast16_t i = 0; i < 10; ++i) {
+	for (uint_fast16_t i = 0; i < 1000; ++i) {
 		printf("AAAAAAAA");
+		if (i == 300) {
+			printf("Received %d\r\n", reportState_SVC(5));
+		}
 	}
 }
 
@@ -53,12 +54,10 @@ int main(void) {
 	
 	/* Add the tasks to the scheduler */
 	
-	reportState();
-	
 	OS_addTask(&TCB1);
 	OS_addTask(&TCB2);
 	OS_addTask(&TCB3);
-
+	
 	/* Start the OS */
 	
 	OS_start();
