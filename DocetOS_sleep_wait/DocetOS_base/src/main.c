@@ -8,9 +8,13 @@
 __attribute__((noreturn))
 static void task1(void const *const args) {
 	(void) args;
+	uint32_t counter = 0;
 	while (1) {
-		//OS_sleep(1000);
+		if (counter == 500) {
+			OS_wait();
+		}
 		printf("AAAAAAAA\n");
+		counter++;
 	}
 }
 
@@ -18,7 +22,6 @@ __attribute__((noreturn))
 static void task2(void const *const args) {
 	(void) args;
 	while (1) {
-		//OS_sleep(2000);
 		printf("BBBBBBBB\n");
 	}
 }

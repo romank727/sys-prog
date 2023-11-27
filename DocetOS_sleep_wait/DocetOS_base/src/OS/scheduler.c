@@ -21,6 +21,7 @@
 */
 
 static _OS_tasklist_t task_list = {.head = 0};
+static _OS_tasklist_t wait_list = {.head = 0};
 
 static void list_add(_OS_tasklist_t *list, OS_TCB_t *task) {
 	if (!(list->head)) {
@@ -45,6 +46,45 @@ static void list_remove(_OS_tasklist_t *list, OS_TCB_t *task) {
 	}
 	task->prev->next = task->next;
 	task->next->prev = task->prev;
+}
+
+// Push an item into a singly-linked list.
+static void list_push_sl(_OS_tasklist_t *list, OS_TCB_t *task) {
+	// Loop until the task is added to the list
+	do {
+		// atomically load the current head of list and mark the memory address for exclusive access
+		// also return the value at that address
+		OS_TCB_t *head = (OS_TCB_t *) __LDREXW ((uint32_t *)&(list->head));
+		// set the "next" pointer of new task to current head of the list
+		// the task will be inserted at the beginning of the list
+		task->next = head;
+	}
+	// attempts to store the new task as the new head of the list atomically
+  // __STREXW will complete the operation only if the exclusive access mark is still valid.
+  // If exclusive access is still valid (returns 0).
+  // If access is lost (returns 1), goes back to the start of the "do" statement.
+	while (__STREXW ((uint32_t) task, (uint32_t *)&(list->head)));
+}
+
+static OS_TCB_t* list_pop_sl(_OS_tasklist_t *list) {
+	// track new and old heads
+	OS_TCB_t * newHead = NULL;
+	OS_TCB_t * oldHead = NULL;
+	do {
+		// atomically load the current head and set it as oldHead
+		oldHead = (OS_TCB_t *) __LDREXW ((uint32_t *)&(list->head));
+		if (!oldHead) {
+			break;
+		}
+		// if the list is not empty, newHead is pointing to next element in list
+		newHead = oldHead->next;
+		// clear the "next" pointer of the old head.
+		// this prevents the popped task from pointing to elements in the list at all. Avoids dangling pointers.
+		oldHead->next = NULL;
+	}
+	// attempt to update the head of list atomically.
+	while (__STREXW ((uint32_t) newHead, (uint32_t *)&(list->head)));
+	return oldHead;
 }
 
 /* Round-robin scheduler */
@@ -118,5 +158,12 @@ void _OS_taskExit_delegate(void) {
 	// Remove the given TCB from the list of tasks so it won't be run again
 	OS_TCB_t * tcb = OS_currentTCB();
 	list_remove(&task_list, tcb);
+	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
+}
+
+void _OS_wait_delegate(void) {
+	OS_TCB_t * currentTask = task_list.head;
+	list_remove(&task_list, currentTask);
+	list_push_sl(&wait_list, currentTask);
 	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
 }
