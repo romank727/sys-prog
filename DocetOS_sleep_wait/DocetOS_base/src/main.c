@@ -9,7 +9,6 @@ __attribute__((noreturn))
 static void task1(void const *const args) {
 	(void) args;
 	while (1) {
-		OS_sleep(100);
 		printf("AAAAAAAA");
 	}
 }
@@ -18,7 +17,6 @@ __attribute__((noreturn))
 static void task2(void const *const args) {
 	(void) args;
 	while (1) {
-		OS_sleep(100);
 		printf("BBBBBBBB");
 	}
 }

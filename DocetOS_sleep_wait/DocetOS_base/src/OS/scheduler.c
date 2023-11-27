@@ -47,19 +47,32 @@ static void list_remove(_OS_tasklist_t *list, OS_TCB_t *task) {
 	task->next->prev = task->prev;
 }
 
+///* Round-robin scheduler */
+//OS_TCB_t const * _OS_schedule(void) {
+//	// if a task exists
+//	if (task_list.head) {
+//		// if (state bit is high AND the task has finished sleeping) OR if the task is not sleeping
+//		if ((task_list.head->state & TASK_STATE_SLEEP && (*(uint32_t*)task_list.head->data < OS_elapsedTicks())) || !(task_list.head->state & TASK_STATE_SLEEP)) {
+//			// clearing the sleep bit (bit 1)
+//			task_list.head->state &= ~TASK_STATE_SLEEP;
+//			// clearing the data void pointer
+//			task_list.head->data = NULL;
+//			task_list.head = task_list.head->next;
+//			task_list.head->state &= ~TASK_STATE_YIELD;
+//			return task_list.head;
+//		}
+//	}
+//	// No tasks are runnable, so return the idle task
+//	return _OS_idleTCB_p;
+//}
+
 /* Round-robin scheduler */
 OS_TCB_t const * _OS_schedule(void) {
-	// if a task exists
 	if (task_list.head) {
-		// if (state bit is high AND the task has finished sleeping) OR if the task is not sleeping
-		if ((task_list.head->state & TASK_STATE_SLEEP && (*(uint32_t*)task_list.head->data < OS_elapsedTicks())) || !(task_list.head->state & TASK_STATE_SLEEP)) {
-			// clearing the sleep bit (bit 1)
-			task_list.head->state &= ~TASK_STATE_SLEEP;
-			// clearing the data void pointer
-			task_list.head->data = NULL;
-			task_list.head = task_list.head->next;
-			task_list.head->state &= ~TASK_STATE_YIELD;
-			return task_list.head;
+		OS_TCB_t * currentHead = task_list.head;
+		OS_TCB_t * nextTask = currentHead->next;
+		while (currentHead != nextTask) {
+			nextTask = nextTask->next;
 		}
 	}
 	// No tasks are runnable, so return the idle task
