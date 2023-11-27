@@ -49,33 +49,33 @@ static void list_remove(_OS_tasklist_t *list, OS_TCB_t *task) {
 
 /* Round-robin scheduler */
 OS_TCB_t const * _OS_schedule(void) {
-    // Check if there is at least one task in the list.
-    if (task_list.head) {
-        // Store the original head to detect if we've gone full circle through the list.
-        OS_TCB_t * originalHead = task_list.head;
-        do {
-            // Advance to the next task in the list.
-            task_list.head = task_list.head->next;
-            // Check if the current task is not asleep (thus runnable) OR it's time to wake up the task.
-            // The first part checks the sleep state, and the second part checks if the wake-up time has passed.
-            if (!(task_list.head->state & TASK_STATE_SLEEP) ||
-               (*(uint32_t *)(task_list.head->data) <= OS_elapsedTicks())) {
-                // If the task is asleep, but the current time is past its wake-up time, clear the sleep flag.
-                if (task_list.head->state & TASK_STATE_SLEEP) {
-                    task_list.head->state &= ~TASK_STATE_SLEEP; // Clear the sleep state.
-                }
-                // Clear the yield flag since we're about to schedule this task now.
-                task_list.head->state &= ~TASK_STATE_YIELD; 
-                // Return the current task, which is either not asleep or has just been woken up.
-                return task_list.head;
-            }
-            // Continue looping until we've checked all tasks in the list.
-            // If we return to the original head, it means all tasks are asleep.
-        } 
-				while (task_list.head != originalHead);
+// Check if there is at least one task in the list.
+	if (task_list.head) {
+		// Store the original head to detect if we've gone full circle through the list.
+    OS_TCB_t * originalHead = task_list.head;
+    do {
+			// Advance to the next task in the list.
+      task_list.head = task_list.head->next;
+      // Check if the current task is not asleep (thus runnable) OR it's time to wake up the task.
+      // The first part checks the sleep state, and the second part checks if the wake-up time has passed.
+      if (!(task_list.head->state & TASK_STATE_SLEEP) ||
+         (*(uint32_t *)(task_list.head->data) <= OS_elapsedTicks())) {
+				// If the task is asleep, but the current time is past its wake-up time, clear the sleep flag.
+				if (task_list.head->state & TASK_STATE_SLEEP) {
+					task_list.head->state &= ~TASK_STATE_SLEEP; // Clear the sleep state.
+        }
+        // Clear the yield flag since we're about to schedule this task now.
+        task_list.head->state &= ~TASK_STATE_YIELD; 
+        // Return the current task, which is either not asleep or has just been woken up.
+        return task_list.head;
+				}
+      // Continue looping until we've checked all tasks in the list.
+      // If we return to the original head, it means all tasks are asleep.
     }
-    // If no runnable tasks are found, or all tasks are asleep, return the idle task.
-    return _OS_idleTCB_p;
+		while (task_list.head != originalHead);
+  }
+	// If no runnable tasks are found, or all tasks are asleep, return the idle task.
+  return _OS_idleTCB_p;
 }
 
 /* Initialises a task control block (TCB) and its associated stack.  See os.h for details. */

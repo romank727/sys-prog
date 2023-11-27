@@ -9,7 +9,7 @@ __attribute__((noreturn))
 static void task1(void const *const args) {
 	(void) args;
 	while (1) {
-		OS_sleep(1000);
+		//OS_sleep(1000);
 		printf("AAAAAAAA\n");
 	}
 }
@@ -18,7 +18,7 @@ __attribute__((noreturn))
 static void task2(void const *const args) {
 	(void) args;
 	while (1) {
-		OS_sleep(2000);
+		//OS_sleep(2000);
 		printf("BBBBBBBB\n");
 	}
 }
@@ -27,7 +27,6 @@ __attribute__((noreturn))
 static void task3(void const *const args) {
 	(void) args;
 	while (1) {
-		OS_sleep(3000);
 		printf("CCCCCCCC\n");
 	}
 }
@@ -58,7 +57,7 @@ int main(void) {
 	
 	OS_addTask(&TCB1);
 	OS_addTask(&TCB2);
-	OS_addTask(&TCB3);
+	//OS_addTask(&TCB3);
 	
 	/* Start the OS */
 	

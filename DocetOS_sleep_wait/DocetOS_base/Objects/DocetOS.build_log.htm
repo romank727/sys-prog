@@ -30,8 +30,8 @@ Rebuild target 'STM32F407 Flash'
 assembling os_asm.s...
 compiling main.c...
 compiling sleep.c...
-compiling os.c...
 compiling scheduler.c...
+compiling os.c...
 compiling hardfault.c...
 assembling startup_stm32f407xx.s...
 C:/Users/Roman/AppData/Local/Arm/Packs/Keil/ARM_Compiler/1.7.2/Source/retarget_io.c(409): warning: invalid UTF-8 in comment [-Winvalid-utf8]
@@ -42,7 +42,7 @@ compiling retarget_io.c...
 compiling utils.c...
 compiling system_stm32f4xx.c...
 linking...
-Program Size: Code=12204 RO-data=1084 RW-data=132 ZI-data=3564  
+Program Size: Code=12100 RO-data=1084 RW-data=132 ZI-data=3564  
 ".\Objects\DocetOS.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
@@ -76,10 +76,10 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.6.0
 
    * Component: Keil.ARM Compiler::Compiler:I/O:STDOUT:User:1.2.0
+      Source file:   Template/stdout_display.c
+      Source file:   Template/stdout_USART.c
       Source file:   Source/retarget_io.c
       Source file:   Template/stdout_user.c
-      Source file:   Template/stdout_USART.c
-      Source file:   Template/stdout_display.c
 
    * Component: Keil.ARM Compiler::Compiler:I/O:TTY:User:1.2.0
       Source file:   Source/retarget_io.c
@@ -87,11 +87,11 @@ Package Vendor: Keil
 
    * Component: Keil::Device:Startup:2.6.3
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
-      Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f407xx.s
-      Source file:   MDK/Device/Source/ARM/STM32F4xx_OTP.s
       Source file:   MDK/Device/Source/ARM/STM32F40xxx_41xxx_OPT.s
       Include file:  Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
-Build Time Elapsed:  00:00:00
+      Source file:   MDK/Device/Source/ARM/STM32F4xx_OTP.s
+      Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f407xx.s
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>
