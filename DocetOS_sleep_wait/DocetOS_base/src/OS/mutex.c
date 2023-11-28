@@ -4,6 +4,7 @@ void OS_mutex_acquire (OS_mutex_t * mutex) {
 	OS_TCB_t *currentTCB = OS_currentTCB();
 	// Enter an infinite loop which will be exited manually when the mutex is acquired.
 	while(1) {
+		uint32_t currentNotificationCount = notification_counter();
 		// Use LDREXW to atomically load the mutex's TCB field.
 		OS_TCB_t *head = (OS_TCB_t *)__LDREXW((uint32_t volatile *)&(mutex->taskBlock));
 		// If the mutex's TCB field is zero, try to acquire the mutex.
@@ -17,9 +18,7 @@ void OS_mutex_acquire (OS_mutex_t * mutex) {
 		// If the mutex's TCB field is not zero and not equal to the current TCB:
 		else if (head != currentTCB) {
 			// Call OS_wait() since the mutex is currently held by another task.
-			OS_wait();
-			// Clear the exclusive lock set by LDREXW since we're going to wait.
-			__CLREX();
+			OS_wait(currentNotificationCount);
 		}
 	}
 	// Increment the mutex's counter after acquiring it.

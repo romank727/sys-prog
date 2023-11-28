@@ -23,6 +23,15 @@
 static _OS_tasklist_t task_list = {.head = 0};
 static _OS_tasklist_t wait_list = {.head = 0};
 static _OS_tasklist_t pending_list = {.head = 0};
+static uint32_t notificationCounter = 0;
+
+uint32_t notification_counter(void) {
+	return notificationCounter;
+}
+
+//OS_TCB_t * OS_currentTCB(void) {
+//	return _currentTCB;
+//}
 
 static void list_add(_OS_tasklist_t *list, OS_TCB_t *task) {
 	if (!(list->head)) {
@@ -88,6 +97,7 @@ static OS_TCB_t* list_pop_sl(_OS_tasklist_t *list) {
 }
 
 void OS_notifyAll(void) {
+	notificationCounter++;
 	// removes all tasks from wait list and adds them to the pending list
 	while (wait_list.head) {
 		list_push_sl(&pending_list, list_pop_sl(&wait_list));
@@ -171,9 +181,12 @@ void _OS_taskExit_delegate(void) {
 	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
 }
 
-void _OS_wait_delegate(void) {
-	OS_TCB_t * currentTask = task_list.head;
-	list_remove(&task_list, currentTask);
-	list_push_sl(&wait_list, currentTask);
-	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
+void _OS_wait_delegate(void * const stack) {
+	_OS_SVC_StackFrame_t *svcStack = (_OS_SVC_StackFrame_t *)stack;
+	if (svcStack->r0 == notificationCounter) {
+		OS_TCB_t * currentTask = task_list.head;
+		list_remove(&task_list, currentTask);
+		list_push_sl(&wait_list, currentTask);
+		SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
+	}
 }

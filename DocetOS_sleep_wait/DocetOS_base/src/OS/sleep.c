@@ -15,5 +15,4 @@ void OS_sleep(uint32_t waitNum) {
 	currentTCB->state |= TASK_STATE_SLEEP;
 	
 	OS_yield();
-
 }
