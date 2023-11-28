@@ -87,7 +87,7 @@ static OS_TCB_t* list_pop_sl(_OS_tasklist_t *list) {
 	return oldHead;
 }
 
-void OS_notifyAll() {
+void OS_notifyAll(void) {
 	// removes all tasks from wait list and adds them to the pending list
 	while (wait_list.head) {
 		list_push_sl(&pending_list, list_pop_sl(&wait_list));

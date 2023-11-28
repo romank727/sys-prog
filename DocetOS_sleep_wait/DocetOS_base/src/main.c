@@ -63,7 +63,7 @@ int main(void) {
 	
 	OS_addTask(&TCB1);
 	OS_addTask(&TCB2);
-	//OS_addTask(&TCB3);
+	OS_addTask(&TCB3);
 	
 	/* Start the OS */
 	
