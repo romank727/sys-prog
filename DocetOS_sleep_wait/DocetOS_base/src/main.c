@@ -1,20 +1,19 @@
 #include "OS/os.h"
 #include "Utils/utils.h"
-#include "Mode_Utils/mode_utils.h"
 #include <stdio.h>
 #include <inttypes.h>
 #include "OS/sleep.h"
+#include "OS/mutex.h"
+
+static OS_mutex_t mutex = OS_MUTEX_STATIC_INITIALISER;
 
 __attribute__((noreturn))
 static void task1(void const *const args) {
 	(void) args;
-	uint32_t counter = 0;
 	while (1) {
-		if (counter == 500) {
-			OS_wait();
-		}
+		OS_mutex_acquire(&mutex);
 		printf("AAAAAAAA\n");
-		counter++;
+		OS_mutex_release(&mutex);
 	}
 }
 
@@ -22,7 +21,9 @@ __attribute__((noreturn))
 static void task2(void const *const args) {
 	(void) args;
 	while (1) {
+		OS_mutex_acquire(&mutex);
 		printf("BBBBBBBB\n");
+		OS_mutex_release(&mutex);
 	}
 }
 
@@ -30,7 +31,9 @@ __attribute__((noreturn))
 static void task3(void const *const args) {
 	(void) args;
 	while (1) {
+		OS_mutex_acquire(&mutex);
 		printf("CCCCCCCC\n");
+		OS_mutex_release(&mutex);
 	}
 }
 

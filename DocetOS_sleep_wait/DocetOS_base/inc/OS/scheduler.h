@@ -44,6 +44,8 @@ void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func
 
 void OS_addTask(OS_TCB_t * const tcb);
 
+void OS_notifyAll(void);
+
 /*========================*/
 /*      INTERNAL API      */
 /*========================*/
@@ -53,7 +55,7 @@ void OS_addTask(OS_TCB_t * const tcb);
 OS_TCB_t const * _OS_schedule(void);
 
 typedef struct {
-	OS_TCB_t * head;
+	OS_TCB_t * volatile head;
 } _OS_tasklist_t;
 
 /* SVC delegates */

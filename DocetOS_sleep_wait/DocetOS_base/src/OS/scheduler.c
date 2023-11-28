@@ -22,6 +22,7 @@
 
 static _OS_tasklist_t task_list = {.head = 0};
 static _OS_tasklist_t wait_list = {.head = 0};
+static _OS_tasklist_t pending_list = {.head = 0};
 
 static void list_add(_OS_tasklist_t *list, OS_TCB_t *task) {
 	if (!(list->head)) {
@@ -54,7 +55,7 @@ static void list_push_sl(_OS_tasklist_t *list, OS_TCB_t *task) {
 	do {
 		// atomically load the current head of list and mark the memory address for exclusive access
 		// also return the value at that address
-		OS_TCB_t *head = (OS_TCB_t *) __LDREXW ((uint32_t *)&(list->head));
+		OS_TCB_t *head = (OS_TCB_t *) __LDREXW ((uint32_t volatile *)&(list->head));
 		// set the "next" pointer of new task to current head of the list
 		// the task will be inserted at the beginning of the list
 		task->next = head;
@@ -63,32 +64,42 @@ static void list_push_sl(_OS_tasklist_t *list, OS_TCB_t *task) {
   // __STREXW will complete the operation only if the exclusive access mark is still valid.
   // If exclusive access is still valid (returns 0).
   // If access is lost (returns 1), goes back to the start of the "do" statement.
-	while (__STREXW ((uint32_t) task, (uint32_t *)&(list->head)));
+	while (__STREXW ((uint32_t) task, (uint32_t volatile *)&(list->head)));
 }
 
 static OS_TCB_t* list_pop_sl(_OS_tasklist_t *list) {
-	// track new and old heads
-	OS_TCB_t * newHead = NULL;
+	// track the head
 	OS_TCB_t * oldHead = NULL;
 	do {
 		// atomically load the current head and set it as oldHead
-		oldHead = (OS_TCB_t *) __LDREXW ((uint32_t *)&(list->head));
+		oldHead = (OS_TCB_t *) __LDREXW ((uint32_t volatile *)&(list->head));
 		if (!oldHead) {
+			// clear the exclusive access flag, so the STREXW works correctly later on
+			__CLREX();
 			break;
 		}
-		// if the list is not empty, newHead is pointing to next element in list
-		newHead = oldHead->next;
-		// clear the "next" pointer of the old head.
-		// this prevents the popped task from pointing to elements in the list at all. Avoids dangling pointers.
-		oldHead->next = NULL;
 	}
 	// attempt to update the head of list atomically.
-	while (__STREXW ((uint32_t) newHead, (uint32_t *)&(list->head)));
+	while (__STREXW ((uint32_t) oldHead->next, (uint32_t volatile *)&(list->head)));
+	// clear the "next" pointer of the old head.
+	// this prevents the popped task from pointing to elements in the list at all. Avoids dangling pointers.
+	oldHead->next = NULL;
 	return oldHead;
+}
+
+void OS_notifyAll() {
+	// removes all tasks from wait list and adds them to the pending list
+	while (wait_list.head) {
+		list_push_sl(&pending_list, list_pop_sl(&wait_list));
+	}
 }
 
 /* Round-robin scheduler */
 OS_TCB_t const * _OS_schedule(void) {
+	// removes all tasks from pending list and adds them to the round-robin list
+	while (pending_list.head) {
+		list_add(&task_list, list_pop_sl(&pending_list));
+	}
 // Check if there is at least one task in the list.
 	if (task_list.head) {
 		// Store the original head to detect if we've gone full circle through the list.
@@ -98,8 +109,7 @@ OS_TCB_t const * _OS_schedule(void) {
       task_list.head = task_list.head->next;
       // Check if the current task is not asleep (thus runnable) OR it's time to wake up the task.
       // The first part checks the sleep state, and the second part checks if the wake-up time has passed.
-      if (!(task_list.head->state & TASK_STATE_SLEEP) ||
-         (*(uint32_t *)(task_list.head->data) <= OS_elapsedTicks())) {
+      if (!(task_list.head->state & TASK_STATE_SLEEP) || (*(uint32_t *)(task_list.head->data) <= OS_elapsedTicks())) {
 				// If the task is asleep, but the current time is past its wake-up time, clear the sleep flag.
 				if (task_list.head->state & TASK_STATE_SLEEP) {
 					task_list.head->state &= ~TASK_STATE_SLEEP; // Clear the sleep state.
@@ -108,7 +118,7 @@ OS_TCB_t const * _OS_schedule(void) {
         task_list.head->state &= ~TASK_STATE_YIELD; 
         // Return the current task, which is either not asleep or has just been woken up.
         return task_list.head;
-				}
+			}
       // Continue looping until we've checked all tasks in the list.
       // If we return to the original head, it means all tasks are asleep.
     }
