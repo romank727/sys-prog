@@ -29,10 +29,6 @@ uint32_t notification_counter(void) {
 	return notificationCounter;
 }
 
-//OS_TCB_t * OS_currentTCB(void) {
-//	return _currentTCB;
-//}
-
 static void list_add(_OS_tasklist_t *list, OS_TCB_t *task) {
 	if (!(list->head)) {
 		task->next = task;
