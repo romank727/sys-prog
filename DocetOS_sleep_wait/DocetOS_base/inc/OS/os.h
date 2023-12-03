@@ -40,8 +40,22 @@ uint32_t OS_elapsedTicks(void);
 /* Scheduling functions */
 /************************/
 
-/* SVC delegate to yield the current task */
+/* SVC delegate to yield the current task 
+	 The current task will stop running, giving away the thread, so the next
+	 task can start running. 
+	 
+	 The yield flag is set, after which the PendSV Handler will be called.
+	 PendSV Handler will be ran in "os_asm.s", and is also of the lowest priority.
+	 In other words, it will be ran as soon as it can, only after more privileged interrupts
+	 are ran.
+	 
+	 PendSV Handler will cause a context switch, which then causes the CPU to go from thread mode 
+	 to handler more, after which it will branch to OS_schedule using its own delegate.
+	 
+	 In simple terms, OS_yield is there to make sure the next task is run.
+*/
 #define OS_yield() _svc_0(OS_SVC_YIELD)
+
 #define OS_wait(x) _svc_1(x, OS_WAIT_ENUM)
 
 /*========================*/

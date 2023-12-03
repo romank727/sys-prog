@@ -37,6 +37,13 @@ uint32_t OS_elapsedTicks(void) {
 
 /* IRQ handler for the system tick.  Schedules PendSV */
 // Local prototype - overrides weak export but is not part of the API
+/*
+	SysTick Handler is of a lower priority than PendSV Handler; PendSV will run 
+	before this if possible, every time.
+	
+	Increment the tick counter, after which trigger the PendSV Handler, which in turn will
+	call the OS scheduler, which will cause the next task to be scheduled.
+*/
 void SysTick_Handler(void) {
 	_ticks = _ticks + 1;
 	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
