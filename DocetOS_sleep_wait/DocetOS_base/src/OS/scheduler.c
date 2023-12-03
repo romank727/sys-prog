@@ -23,6 +23,7 @@
 static _OS_tasklist_t task_list = {.head = 0};
 static _OS_tasklist_t wait_list = {.head = 0};
 static _OS_tasklist_t pending_list = {.head = 0};
+static _OS_tasklist_t sleep_list = {.head = 0};
 static uint32_t notificationCounter = 0;
 
 uint32_t notification_counter(void) {
@@ -102,6 +103,16 @@ void OS_notifyAll(void) {
 
 /* Round-robin scheduler */
 OS_TCB_t const * _OS_schedule(void) {
+	
+	while (sleep_list.head) {
+		if (*(uint32_t *)sleep_list.head->data > OS_elapsedTicks()) {
+			OS_TCB_t *taskToWake = list_pop_sl(&sleep_list);
+			list_add(&task_list, taskToWake);
+			taskToWake->state &= ~TASK_STATE_SLEEP;
+		}
+		sleep_list.head = sleep_list.head->next;
+	}
+	
 	// removes all tasks from pending list and adds them to the round-robin list
 	while (pending_list.head) {
 		list_add(&task_list, list_pop_sl(&pending_list));
@@ -186,3 +197,16 @@ void _OS_wait_delegate(void * const stack) {
 		SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
 	}
 }
+
+void _OS_sleep_delegate(uint32_t sleepTime) {
+	OS_TCB_t * currentTCB = OS_currentTCB();
+	uint32_t wakeUp = OS_elapsedTicks() + sleepTime;
+	currentTCB->data = &wakeUp;
+	currentTCB->state |= TASK_STATE_SLEEP;
+	
+	list_remove(&task_list, currentTCB);
+	list_push_sl(&sleep_list, currentTCB);
+	
+	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
+}
+

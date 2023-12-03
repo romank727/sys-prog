@@ -2,7 +2,6 @@
 #include "Utils/utils.h"
 #include <stdio.h>
 #include <inttypes.h>
-#include "OS/sleep.h"
 #include "OS/mutex.h"
 
 static OS_mutex_t mutex = OS_MUTEX_STATIC_INITIALISER;
@@ -10,10 +9,15 @@ static OS_mutex_t mutex = OS_MUTEX_STATIC_INITIALISER;
 __attribute__((noreturn))
 static void task1(void const *const args) {
 	(void) args;
+	uint32_t counter = 0;
 	while (1) {
+		if (counter == 200) {
+			OS_sleep(10)
+		}
 		OS_mutex_acquire(&mutex);
 		printf("AAAAAAAA\n");
 		OS_mutex_release(&mutex);
+		counter++;
 	}
 }
 

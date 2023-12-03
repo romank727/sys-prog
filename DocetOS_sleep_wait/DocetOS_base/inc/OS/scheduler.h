@@ -63,6 +63,7 @@ typedef struct {
 /* SVC delegates */
 void _OS_taskExit_delegate(void);
 void _OS_wait_delegate(void * const stack);
+void _OS_sleep_delegate(uint32_t sleepTime);
 
 /* Constants that define bits in a thread's 'state' field. */
 #define TASK_STATE_YIELD    (1UL << 0) // Bit zero is the 'yield' flag
