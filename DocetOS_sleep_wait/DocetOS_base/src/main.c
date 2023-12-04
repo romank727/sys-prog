@@ -12,10 +12,10 @@ static void task1(void const *const args) {
 	uint32_t counter = 0;
 	while (1) {
 		if (counter == 100) {
-			OS_sleep(1000);
+			OS_sleep(5000);
 		}
 		OS_mutex_acquire(&mutex);
-		printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+		printf("AAAAAAAA\n");
 		OS_mutex_release(&mutex);
 		counter++;
 	}

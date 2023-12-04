@@ -15,7 +15,7 @@ typedef struct s_OS_TCB_t {
 	   runnable, or whatever.  Only one bit of this field is currently defined (see the #define
 	   below), so you can use the remaining 31 bits for anything you like. */
 	uint32_t volatile state;
-	/* This field acts as a generic data type.
+	/* This field acts as a integer data type.
 	   In this case, bit 1 of the 31 bits in use represents the data. */
 	/* bit 0 = state
 		 bit 1 = sleep */
