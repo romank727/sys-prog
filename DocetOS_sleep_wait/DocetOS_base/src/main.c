@@ -11,9 +11,9 @@ static void task1(void const *const args) {
 	(void) args;
 	uint32_t counter = 0;
 	while (1) {
-		if (counter == 1) {
-			OS_sleep(100);
-		}
+//		if (counter == 1) {
+//			OS_sleep(100);
+//		}
 		OS_mutex_acquire(&mutex);
 		printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
 		OS_mutex_release(&mutex);

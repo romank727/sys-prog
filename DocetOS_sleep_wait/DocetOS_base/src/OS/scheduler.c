@@ -107,44 +107,63 @@ void OS_notifyAll(void) {
 	}
 }
 
+static void sort_sleep_list(OS_TCB_t *insertTask) {
+	// extract the wake-up time from the task's data field.
+	uint32_t taskWakeUpTime = *(uint32_t *)(insertTask->data);
+  // check if the list is empty or if this task needs to wake up earlier 
+  // than the current head of the list.	
+	if(!sleep_list.head || taskWakeUpTime <= *(uint32_t *)(sleep_list.head->data)) {
+		// If the list is empty or the task wakes up earlier than the current first task,
+		// use list_push_sl to add it to the front of the list.
+		list_push_sl(&sleep_list, insertTask);
+		return;
+	}
+	// iterate from the head of the list.
+	OS_TCB_t *currentTask = sleep_list.head;
+	// Iterate through the list until finding the position where the task should be inserted.
+	// This is done by comparing the wake-up times of the tasks in the list.
+	// The loop continues until it finds a task that wakes up later than the current task.
+	while (currentTask->next && *(uint32_t *)(currentTask->next->data) <= taskWakeUpTime) {
+		currentTask = currentTask->next;
+	}
+	// Insert the task in its correct position in the list.
+	// The task is inserted after 'current' and before 'current->next'.
+	insertTask->next = currentTask->next;		// The new task points to the next task in the list.
+	currentTask->next = insertTask;					// The current task now points to the new task.
+}
+
 /* Round-robin scheduler */
 OS_TCB_t const * _OS_schedule(void) {
 	// removes all tasks from pending list and adds them to the round-robin list
 	while (pending_list.head) {
 		list_add(&task_list, list_pop_sl(&pending_list));
 	}
-	// This code is assuming the task at the head is ready to be woken up.
-	// THIS IS WRONG.
-	while ((*(uint32_t *)(sleep_list.head->data) <= OS_elapsedTicks())) {
-		OS_TCB_t * sleepTask = list_pop_sl(&sleep_list);
-		sleep_list.head->state &= ~TASK_STATE_SLEEP;
-		list_add(&task_list, sleepTask);
+
+	// wake up tasks if needed
+	while (sleep_list.head && *(uint32_t *)(sleep_list.head->data) <= OS_elapsedTicks()) {
+		OS_TCB_t *taskToWake = list_pop_sl(&sleep_list);
+		taskToWake->state &= ~TASK_STATE_SLEEP;
+		list_add(&task_list, taskToWake);
 	}
 	
-	// Check if there is at least one task in the list.
+	// Check if there is at least one task in the round-robin list.
 	if (task_list.head) {
 		// Store the original head to detect if we've gone full circle through the list.
-    OS_TCB_t * originalHead = task_list.head;
-    do {
+		OS_TCB_t *originalHead = task_list.head;
+		do {
 			// Advance to the next task in the list.
-      task_list.head = task_list.head->next;
-      // Check if the current task is not asleep (thus runnable) OR it's time to wake up the task.
-      // The first part checks the sleep state, and the second part checks if the wake-up time has passed.
-      if (!(task_list.head->state & TASK_STATE_SLEEP) || (*(uint32_t *)(task_list.head->data) <= OS_elapsedTicks())) {
-				// If the task is asleep, but the current time is past its wake-up time, clear the sleep flag.
-				if (task_list.head->state & TASK_STATE_SLEEP) {
-					task_list.head->state &= ~TASK_STATE_SLEEP; // Clear the sleep state.
-        }
-        // Clear the yield flag since we're about to schedule this task now.
-        task_list.head->state &= ~TASK_STATE_YIELD;
-        // Return the current task, which is either not asleep or has just been woken up.
-        return task_list.head;
+			task_list.head = task_list.head->next;
+
+			// If the task is runnable or if its wake-up time has passed, it should be scheduled.
+			if (!(task_list.head->state & TASK_STATE_SLEEP)) {
+				// Clear the yield flag since we're about to schedule this task now.
+				task_list.head->state &= ~TASK_STATE_YIELD;
+				// Return the current task, which is either not asleep or has just been woken up.
+				return task_list.head;
 			}
-      // Continue looping until we've checked all tasks in the list.
-      // If we return to the original head, it means all tasks are asleep.
-    }
-		while (task_list.head != originalHead);
-  }
+			// Continue looping until we've checked all tasks in the list.
+		} while (task_list.head != originalHead);
+	}
 	// If no runnable tasks are found, or all tasks are asleep, return the idle task.
   return _OS_idleTCB_p;
 }
@@ -198,6 +217,8 @@ void _OS_wait_delegate(void * const stack) {
 		OS_TCB_t * currentTask = task_list.head;
 		list_remove(&task_list, currentTask);
 		list_push_sl(&wait_list, currentTask);
+		
+		// setting the PendSV bit to trigger a context switch
 		SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
 	}
 }
@@ -213,7 +234,7 @@ void _OS_sleep_delegate(uint32_t sleepTime) {
 	currentTask->state |= TASK_STATE_SLEEP;
 	
 	list_remove(&task_list, currentTask);
-	list_push_sl(&sleep_list, currentTask);
+	sort_sleep_list(currentTask);
 	
 	// setting the PendSV bit to trigger a context switch
 	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
