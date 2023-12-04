@@ -23,8 +23,6 @@
 static _OS_tasklist_t task_list = {.head = 0};
 static _OS_tasklist_t wait_list = {.head = 0};
 static _OS_tasklist_t pending_list = {.head = 0};
-// Need to make the sleep list an insertion sorted list
-// The head of the list is basically the task that is ready to be woken up every time
 static _OS_tasklist_t sleep_list = {.head = 0};
 static uint32_t notificationCounter = 0;
 
@@ -89,9 +87,6 @@ static OS_TCB_t* list_pop_sl(_OS_tasklist_t *list) {
 	}
 	// attempt to update the head of list atomically.
 	while (__STREXW ((uint32_t) oldHead->next, (uint32_t volatile *)&(list->head)));
-	// clear the "next" pointer of the old head.
-	// this prevents the popped task from pointing to elements in the list at all. Avoids dangling pointers.
-	oldHead->next = NULL;
 	return oldHead;
 }
 
@@ -109,10 +104,10 @@ void OS_notifyAll(void) {
 
 static void sort_sleep_list(OS_TCB_t *insertTask) {
 	// extract the wake-up time from the task's data field.
-	uint32_t taskWakeUpTime = *(uint32_t *)(insertTask->data);
+	uint32_t taskWakeUpTime = insertTask->data;
   // check if the list is empty or if this task needs to wake up earlier 
   // than the current head of the list.	
-	if(!sleep_list.head || taskWakeUpTime <= *(uint32_t *)(sleep_list.head->data)) {
+	if(!sleep_list.head || taskWakeUpTime <= sleep_list.head->data) {
 		// If the list is empty or the task wakes up earlier than the current first task,
 		// use list_push_sl to add it to the front of the list.
 		list_push_sl(&sleep_list, insertTask);
@@ -123,7 +118,7 @@ static void sort_sleep_list(OS_TCB_t *insertTask) {
 	// Iterate through the list until finding the position where the task should be inserted.
 	// This is done by comparing the wake-up times of the tasks in the list.
 	// The loop continues until it finds a task that wakes up later than the current task.
-	while (currentTask->next && *(uint32_t *)(currentTask->next->data) <= taskWakeUpTime) {
+	while (currentTask->next && (currentTask->next->data <= taskWakeUpTime)) {
 		currentTask = currentTask->next;
 	}
 	// Insert the task in its correct position in the list.
@@ -140,7 +135,7 @@ OS_TCB_t const * _OS_schedule(void) {
 	}
 
 	// wake up tasks if needed
-	while (sleep_list.head && *(uint32_t *)(sleep_list.head->data) <= OS_elapsedTicks()) {
+	while (sleep_list.head && (sleep_list.head->data <= OS_elapsedTicks())) {
 		OS_TCB_t *taskToWake = list_pop_sl(&sleep_list);
 		taskToWake->state &= ~TASK_STATE_SLEEP;
 		list_add(&task_list, taskToWake);
@@ -211,8 +206,10 @@ void _OS_taskExit_delegate(void) {
 	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
 }
 
-void _OS_wait_delegate(void * const stack) {
-	_OS_SVC_StackFrame_t *svcStack = (_OS_SVC_StackFrame_t *)stack;
+void _OS_wait_delegate(_OS_SVC_StackFrame_t *svcStack);
+void _OS_sleep_delegate(_OS_SVC_StackFrame_t *svcStack);
+
+void _OS_wait_delegate(_OS_SVC_StackFrame_t *svcStack) {
 	if (svcStack->r0 == notificationCounter) {
 		OS_TCB_t * currentTask = task_list.head;
 		list_remove(&task_list, currentTask);
@@ -223,13 +220,14 @@ void _OS_wait_delegate(void * const stack) {
 	}
 }
 
-void _OS_sleep_delegate(uint32_t sleepTime) {
+void _OS_sleep_delegate(_OS_SVC_StackFrame_t *svcStack) {
+	// _OS_SVC_StackFrame_t *svcStack = (_OS_SVC_StackFrame_t *)stack;
 	// current task's TCB
 	OS_TCB_t *currentTask = OS_currentTCB();
 	// calculate when the task would need to wake up 
-	uint32_t wakeUp = OS_elapsedTicks() + sleepTime;
+	uint32_t wakeUp = OS_elapsedTicks() + svcStack->r0;
 	// store the wake up time in the TCB
-	currentTask->data = &wakeUp;
+	currentTask->data = wakeUp;
 	// indicate the current task state to be sleeping
 	currentTask->state |= TASK_STATE_SLEEP;
 	

@@ -19,7 +19,7 @@ typedef struct s_OS_TCB_t {
 	   In this case, bit 1 of the 31 bits in use represents the data. */
 	/* bit 0 = state
 		 bit 1 = sleep */
-	void * data;
+	uint32_t volatile data;
 	struct s_OS_TCB_t * prev;
 	struct s_OS_TCB_t * next;
 } OS_TCB_t;
@@ -62,8 +62,6 @@ typedef struct {
 
 /* SVC delegates */
 void _OS_taskExit_delegate(void);
-void _OS_wait_delegate(void * const stack);
-void _OS_sleep_delegate(uint32_t sleepTime);
 
 /* Constants that define bits in a thread's 'state' field. */
 #define TASK_STATE_YIELD    (1UL << 0) // Bit zero is the 'yield' flag
