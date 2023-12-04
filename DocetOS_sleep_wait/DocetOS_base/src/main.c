@@ -11,11 +11,11 @@ static void task1(void const *const args) {
 	(void) args;
 	uint32_t counter = 0;
 	while (1) {
-		if (counter == 200) {
-			OS_sleep(10)
+		if (counter == 1) {
+			OS_sleep(100);
 		}
 		OS_mutex_acquire(&mutex);
-		printf("AAAAAAAA\n");
+		printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
 		OS_mutex_release(&mutex);
 		counter++;
 	}
@@ -67,7 +67,7 @@ int main(void) {
 	
 	OS_addTask(&TCB1);
 	OS_addTask(&TCB2);
-	OS_addTask(&TCB3);
+	//OS_addTask(&TCB3);
 	
 	/* Start the OS */
 	

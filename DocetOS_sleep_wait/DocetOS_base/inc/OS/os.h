@@ -59,7 +59,7 @@ uint32_t OS_elapsedTicks(void);
 
 #define OS_wait(x) _svc_1(x, OS_WAIT_ENUM)
 
-#define OS_sleep(waitNum )_svc_1(waitNum, OS_SVC_SLEEP);
+#define OS_sleep(waitNum )_svc_1(waitNum, OS_SVC_SLEEP)
 
 /*========================*/
 /*      INTERNAL API      */
