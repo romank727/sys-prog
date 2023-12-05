@@ -1,9 +1,5 @@
 #include "OS/sleep.h"
 
-extern uint32_t OS_elapsedTicks(void);
-extern void list_push_sl(_OS_tasklist_t *list, OS_TCB_t *task);
-extern void list_remove(_OS_tasklist_t *list, OS_TCB_t *task);
-
 void sort_sleep_list(OS_TCB_t *insertTask) {
 	// extract the wake-up time from the task's data field.
 	uint32_t taskWakeUpTime = insertTask->data;

@@ -21,7 +21,7 @@ Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.1.0.0
 Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
-F:\Coding\DocetOS_sleep_wait\DocetOS_base\DocetOS.uvprojx
+F:\Coding\Sys. Prog\sys-prog\DocetOS_current\DocetOS_base\DocetOS.uvprojx
 Project File Date:  12/05/2023
 
 <h2>Output:</h2>
@@ -29,9 +29,9 @@ Project File Date:  12/05/2023
 Rebuild target 'STM32F407 Flash'
 assembling os_asm.s...
 compiling main.c...
-compiling sleep.c...
 compiling os.c...
 compiling scheduler.c...
+compiling sleep.c...
 compiling mutex.c...
 compiling hardfault.c...
 assembling startup_stm32f407xx.s...
@@ -77,21 +77,21 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.6.0
 
    * Component: Keil.ARM Compiler::Compiler:I/O:STDOUT:User:1.2.0
+      Source file:   Template/stdout_user.c
       Source file:   Template/stdout_USART.c
       Source file:   Source/retarget_io.c
       Source file:   Template/stdout_display.c
-      Source file:   Template/stdout_user.c
 
    * Component: Keil.ARM Compiler::Compiler:I/O:TTY:User:1.2.0
-      Source file:   Source/retarget_io.c
       Source file:   Template/tty_user.c
+      Source file:   Source/retarget_io.c
 
    * Component: Keil::Device:Startup:2.6.3
-      Include file:  Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
-      Source file:   MDK/Device/Source/ARM/STM32F4xx_OTP.s
-      Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f407xx.s
-      Source file:   MDK/Device/Source/ARM/STM32F40xxx_41xxx_OPT.s
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
+      Source file:   MDK/Device/Source/ARM/STM32F4xx_OTP.s
+      Source file:   MDK/Device/Source/ARM/STM32F40xxx_41xxx_OPT.s
+      Include file:  Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
+      Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f407xx.s
 Build Time Elapsed:  00:00:01
 </pre>
 </body>
