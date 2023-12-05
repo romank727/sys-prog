@@ -25,7 +25,10 @@ void sort_sleep_list(OS_TCB_t *insertTask) {
 	currentTask->next = insertTask;					// The current task now points to the new task.
 }
 
-void _OS_sleep_delegate(_OS_SVC_StackFrame_t *svcStack) {
+// SVC prototype. Needs to be here because having it in header file is pointless;
+// No other code will call this delegate.
+void OS_sleep_delegate(_OS_SVC_StackFrame_t *svcStack);
+void OS_sleep_delegate(_OS_SVC_StackFrame_t *svcStack) {
 	// _OS_SVC_StackFrame_t *svcStack = (_OS_SVC_StackFrame_t *)stack;
 	// current task's TCB
 	OS_TCB_t *currentTask = OS_currentTCB();

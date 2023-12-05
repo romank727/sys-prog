@@ -9,15 +9,11 @@ static OS_mutex_t mutex = OS_MUTEX_STATIC_INITIALISER;
 __attribute__((noreturn))
 static void task1(void const *const args) {
 	(void) args;
-	uint32_t counter = 0;
 	while (1) {
-		if (counter == 100) {
-			OS_sleep(5000);
-		}
+		OS_sleep(1000);
 		OS_mutex_acquire(&mutex);
 		printf("AAAAAAAA\n");
 		OS_mutex_release(&mutex);
-		counter++;
 	}
 }
 
@@ -25,6 +21,7 @@ __attribute__((noreturn))
 static void task2(void const *const args) {
 	(void) args;
 	while (1) {
+		OS_sleep(2000);
 		OS_mutex_acquire(&mutex);
 		printf("BBBBBBBB\n");
 		OS_mutex_release(&mutex);

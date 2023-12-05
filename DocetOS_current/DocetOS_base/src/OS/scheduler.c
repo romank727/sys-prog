@@ -1,6 +1,5 @@
 #define OS_INTERNAL
 
-#include "OS/scheduler.h"
 #include "OS/os.h"
 #include "OS/sleep.h"
 #include "stm32f4xx.h"
@@ -23,10 +22,6 @@ static _OS_tasklist_t wait_list = {.head = 0};
 static _OS_tasklist_t pending_list = {.head = 0};
 _OS_tasklist_t sleep_list = {.head = 0};
 static uint32_t notificationCounter = 0;
-
-// external functions accessed from "sleep.c"
-extern void sort_sleep_list(OS_TCB_t *insertTask);
-extern void _OS_sleep_delegate(_OS_SVC_StackFrame_t *svcStack);
 
 uint32_t notification_counter(void) {
 	return notificationCounter;
