@@ -3,7 +3,6 @@
 #include "OS/os.h"
 #include "OS/sleep.h"
 #include "stm32f4xx.h"
-#include <string.h>
 
 /* This is an implementation of an extremely simple round-robin scheduler.
 
@@ -21,6 +20,7 @@ _OS_tasklist_t task_list = {.head = 0};
 static _OS_tasklist_t wait_list = {.head = 0};
 static _OS_tasklist_t pending_list = {.head = 0};
 _OS_tasklist_t sleep_list = {.head = 0};
+
 static uint32_t notificationCounter = 0;
 
 uint32_t notification_counter(void) {
@@ -72,7 +72,7 @@ void list_push_sl(_OS_tasklist_t *list, OS_TCB_t *task) {
 
 static OS_TCB_t* list_pop_sl(_OS_tasklist_t *list) {
 	// track the head
-	OS_TCB_t * oldHead = NULL;
+	OS_TCB_t * oldHead = 0;
 	do {
 		// atomically load the current head and set it as oldHead
 		oldHead = (OS_TCB_t *) __LDREXW ((uint32_t volatile *)&(list->head));
@@ -115,21 +115,12 @@ OS_TCB_t const * _OS_schedule(void) {
 	
 	// Check if there is at least one task in the round-robin list.
 	if (task_list.head) {
-		// Store the original head to detect if we've gone full circle through the list.
-		OS_TCB_t *originalHead = task_list.head;
-		do {
-			// Advance to the next task in the list.
-			task_list.head = task_list.head->next;
-
-			// If the task is runnable or if its wake-up time has passed, it should be scheduled.
-			if (!(task_list.head->state & TASK_STATE_SLEEP)) {
-				// Clear the yield flag since we're about to schedule this task now.
-				task_list.head->state &= ~TASK_STATE_YIELD;
-				// Return the current task, which is either not asleep or has just been woken up.
-				return task_list.head;
-			}
-			// Continue looping until we've checked all tasks in the list.
-		} while (task_list.head != originalHead);
+		// Advance to the next task in the list.
+		task_list.head = task_list.head->next;
+		// Clear the yield flag since we're about to schedule this task now.
+		task_list.head->state &= ~TASK_STATE_YIELD;
+		// Return the current task, which is either not asleep or has just been woken up.
+		return task_list.head;
 	}
 	// If no runnable tasks are found, or all tasks are asleep, return the idle task.
   return _OS_idleTCB_p;

@@ -43,3 +43,11 @@ void OS_mutex_release (OS_mutex_t * mutex) {
 	// from hogging the CPU.
 	OS_yield();
 }
+
+/* 
+	 1. have a list of TCBs that are ready to get the mutex. 
+	 2. once a TCB frees up the mutex, the head of the list will contain 
+			the task that is ready to acquire the mutex (be notified)
+	 3. no other TCBs will be notified, they simply move up the order of the list. 
+	 4. have some sort of counter like we did before to show the release attempt maybe.
+*/

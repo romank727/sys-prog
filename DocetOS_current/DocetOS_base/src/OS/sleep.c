@@ -1,6 +1,8 @@
 #include "OS/sleep.h"
+#include "OS/os.h"
 
-void sort_sleep_list(OS_TCB_t *insertTask) {
+void sort_sleep_list(void *taskToInsert) {
+	OS_TCB_t * insertTask = (OS_TCB_t *) taskToInsert;
 	// extract the wake-up time from the task's data field.
 	uint32_t taskWakeUpTime = insertTask->data;
   // check if the list is empty or if this task needs to wake up earlier 
@@ -29,7 +31,6 @@ void sort_sleep_list(OS_TCB_t *insertTask) {
 // No other code will call this delegate.
 void OS_sleep_delegate(_OS_SVC_StackFrame_t *svcStack);
 void OS_sleep_delegate(_OS_SVC_StackFrame_t *svcStack) {
-	// _OS_SVC_StackFrame_t *svcStack = (_OS_SVC_StackFrame_t *)stack;
 	// current task's TCB
 	OS_TCB_t *currentTask = OS_currentTCB();
 	// calculate when the task would need to wake up 

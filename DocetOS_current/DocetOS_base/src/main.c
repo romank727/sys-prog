@@ -32,6 +32,7 @@ __attribute__((noreturn))
 static void task3(void const *const args) {
 	(void) args;
 	while (1) {
+		OS_sleep(3000);
 		OS_mutex_acquire(&mutex);
 		printf("CCCCCCCC\n");
 		OS_mutex_release(&mutex);
@@ -64,7 +65,7 @@ int main(void) {
 	
 	OS_addTask(&TCB1);
 	OS_addTask(&TCB2);
-	//OS_addTask(&TCB3);
+	OS_addTask(&TCB3);
 	
 	/* Start the OS */
 	
