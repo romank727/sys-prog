@@ -1,10 +1,11 @@
 #include "OS/mutex.h"
 
+static uint32_t notificationCounter = 0;
+
 void OS_mutex_acquire (OS_mutex_t * mutex) {
 	OS_TCB_t *currentTCB = OS_currentTCB();
 	// Enter an infinite loop which will be exited manually when the mutex is acquired.
 	while(1) {
-		uint32_t currentNotificationCount = notification_counter();
 		// Use LDREXW to atomically load the mutex's TCB field.
 		OS_TCB_t *head = (OS_TCB_t *)__LDREXW((uint32_t volatile *)&(mutex->taskBlock));
 		// If the mutex's TCB field is zero, try to acquire the mutex.
@@ -18,7 +19,7 @@ void OS_mutex_acquire (OS_mutex_t * mutex) {
 		// If the mutex's TCB field is not zero and not equal to the current TCB:
 		else if (head != currentTCB) {
 			// Call OS_wait() since the mutex is currently held by another task.
-			OS_wait(currentNotificationCount);
+			OS_wait(notificationCounter, (uint32_t)&(mutex->waitingList));
 		}
 	}
 	// Increment the mutex's counter after acquiring it.
@@ -34,8 +35,7 @@ void OS_mutex_release (OS_mutex_t * mutex) {
 		if (!mutex->counter) {
 			// Set the mutex's task block to zero, effectively freeing the mutex.
 			mutex->taskBlock = 0;
-			// Notify all tasks waiting for this mutex that it is now available.
-			OS_notifyAll();
+			OS_notify(mutex);
 		}
 	}
 	// Yield the processor after releasing the mutex to allow other tasks to run.
@@ -44,10 +44,24 @@ void OS_mutex_release (OS_mutex_t * mutex) {
 	OS_yield();
 }
 
-/* 
-	 1. have a list of TCBs that are ready to get the mutex. 
-	 2. once a TCB frees up the mutex, the head of the list will contain 
-			the task that is ready to acquire the mutex (be notified)
-	 3. no other TCBs will be notified, they simply move up the order of the list. 
-	 4. have some sort of counter like we did before to show the release attempt maybe.
-*/
+void _OS_wait_delegate(_OS_SVC_StackFrame_t *svcStack) {
+	_OS_tasklist_t *waitingList = (_OS_tasklist_t *)(svcStack->r1);
+
+	if (svcStack->r0 == notificationCounter) {
+		OS_TCB_t * currentTask = OS_currentTCB();
+		list_remove(&task_list, currentTask);
+		list_push_sl(waitingList, currentTask);
+    
+		// setting the PendSV bit to trigger a context switch
+		SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
+	}
+}
+
+void OS_notify(OS_mutex_t *mutex) {
+	notificationCounter++;
+	OS_TCB_t * task = list_pop_sl(&mutex->waitingList);
+	if (task) {
+		list_push_sl(&pending_list, task);
+	}
+}
+

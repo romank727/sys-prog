@@ -17,15 +17,8 @@
 */
 
 _OS_tasklist_t task_list = {.head = 0};
-static _OS_tasklist_t wait_list = {.head = 0};
-static _OS_tasklist_t pending_list = {.head = 0};
+_OS_tasklist_t pending_list = {.head = 0};
 _OS_tasklist_t sleep_list = {.head = 0};
-
-static uint32_t notificationCounter = 0;
-
-uint32_t notification_counter(void) {
-	return notificationCounter;
-}
 
 static void list_add(_OS_tasklist_t *list, OS_TCB_t *task) {
 	if (!(list->head)) {
@@ -70,7 +63,7 @@ void list_push_sl(_OS_tasklist_t *list, OS_TCB_t *task) {
 	while (__STREXW ((uint32_t) task, (uint32_t volatile *)&(list->head)));
 }
 
-static OS_TCB_t* list_pop_sl(_OS_tasklist_t *list) {
+OS_TCB_t* list_pop_sl(_OS_tasklist_t *list) {
 	// track the head
 	OS_TCB_t * oldHead = 0;
 	do {
@@ -85,18 +78,6 @@ static OS_TCB_t* list_pop_sl(_OS_tasklist_t *list) {
 	// attempt to update the head of list atomically.
 	while (__STREXW ((uint32_t) oldHead->next, (uint32_t volatile *)&(list->head)));
 	return oldHead;
-}
-
-void OS_notifyAll(void) {
-	notificationCounter++;
-	OS_TCB_t * task = 0;
-	// removes all tasks from wait list and adds them to the pending list
-	/* assigning whatever is popped from the wait list to "task", as well as checking if it
-		 is the same as the item that was popped.
-		 Needed because inbetween each loop, the wait list could get altered by other interrupt */
-	while ( (task = list_pop_sl(&wait_list)) ) {
-		list_push_sl(&pending_list, task);
-	}
 }
 
 /* Round-robin scheduler */
@@ -168,15 +149,3 @@ void _OS_taskExit_delegate(void) {
 	list_remove(&task_list, tcb);
 	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
 }
-
-void _OS_wait_delegate(_OS_SVC_StackFrame_t *svcStack) {
-	if (svcStack->r0 == notificationCounter) {
-		OS_TCB_t * currentTask = task_list.head;
-		list_remove(&task_list, currentTask);
-		list_push_sl(&wait_list, currentTask);
-		
-		// setting the PendSV bit to trigger a context switch
-		SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
-	}
-}
-

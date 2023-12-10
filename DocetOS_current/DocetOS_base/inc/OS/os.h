@@ -19,7 +19,7 @@ enum OS_SVC_e {
 	OS_SVC_EXIT,
 	OS_SVC_YIELD,
 	OS_SVC_SCHEDULE,
-	OS_WAIT_ENUM,
+	OS_SVC_WAIT,
 	OS_SVC_SLEEP,
 };
 
@@ -57,9 +57,9 @@ uint32_t OS_elapsedTicks(void);
 */
 #define OS_yield() _svc_0(OS_SVC_YIELD)
 
-#define OS_wait(x) _svc_1(x, OS_WAIT_ENUM)
+#define OS_sleep(sleepNum) _svc_1(sleepNum, OS_SVC_SLEEP)
 
-#define OS_sleep(waitNum )_svc_1(waitNum, OS_SVC_SLEEP)
+#define OS_wait(notifCounter, mutexWaitList) _svc_2(notifCounter, mutexWaitList, OS_SVC_WAIT)
 
 /*========================*/
 /*      INTERNAL API      */

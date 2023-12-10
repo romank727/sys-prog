@@ -44,10 +44,6 @@ void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func
 
 void OS_addTask(OS_TCB_t * const tcb);
 
-void OS_notifyAll(void);
-
-uint32_t notification_counter(void);
-
 /*========================*/
 /*      INTERNAL API      */
 /*========================*/
@@ -62,8 +58,10 @@ typedef struct {
 
 extern _OS_tasklist_t task_list;
 extern _OS_tasklist_t sleep_list;
+extern _OS_tasklist_t pending_list;
 
 void list_push_sl(_OS_tasklist_t *list, OS_TCB_t *task);
+OS_TCB_t* list_pop_sl(_OS_tasklist_t *list);
 void list_remove(_OS_tasklist_t *list, OS_TCB_t *task);
 
 /* SVC delegates */

@@ -1,8 +1,8 @@
+#include "OS/mutex.h"
 #include "OS/os.h"
 #include "Utils/utils.h"
 #include <stdio.h>
 #include <inttypes.h>
-#include "OS/mutex.h"
 
 static OS_mutex_t mutex = OS_MUTEX_STATIC_INITIALISER;
 
