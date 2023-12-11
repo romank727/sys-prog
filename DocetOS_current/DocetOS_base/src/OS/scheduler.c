@@ -20,7 +20,7 @@ _OS_tasklist_t task_list = {.head = 0};
 _OS_tasklist_t pending_list = {.head = 0};
 _OS_tasklist_t sleep_list = {.head = 0};
 
-static void list_add(_OS_tasklist_t *list, OS_TCB_t *task) {
+void list_add(_OS_tasklist_t *list, OS_TCB_t *task) {
 	if (!(list->head)) {
 		task->next = task;
 		task->prev = task;
@@ -82,16 +82,16 @@ OS_TCB_t* list_pop_sl(_OS_tasklist_t *list) {
 
 /* Round-robin scheduler */
 OS_TCB_t const * _OS_schedule(void) {
-	// removes all tasks from pending list and adds them to the round-robin list
-	while (pending_list.head) {
-		list_add(&task_list, list_pop_sl(&pending_list));
-	}
-
 	// wake up tasks if needed
 	while (sleep_list.head && (sleep_list.head->data <= OS_elapsedTicks())) {
 		OS_TCB_t *taskToWake = list_pop_sl(&sleep_list);
 		taskToWake->state &= ~TASK_STATE_SLEEP;
-		list_add(&task_list, taskToWake);
+		list_push_sl(&pending_list, taskToWake);
+	}
+	
+	// removes all tasks from pending list and adds them to the round-robin list
+	while (pending_list.head) {
+		list_add(&task_list, list_pop_sl(&pending_list));
 	}
 	
 	// Check if there is at least one task in the round-robin list.

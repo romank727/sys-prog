@@ -1,6 +1,7 @@
 #include "OS/mutex.h"
 
 static uint32_t notificationCounter = 0;
+OS_TCB_t* list_pop_tail_dl(_OS_tasklist_t *list);
 
 void OS_mutex_acquire (OS_mutex_t * mutex) {
 	OS_TCB_t *currentTCB = OS_currentTCB();
@@ -27,16 +28,12 @@ void OS_mutex_acquire (OS_mutex_t * mutex) {
 }
 
 void OS_mutex_release (OS_mutex_t * mutex) {
-	// Check if the current task is the one that holds the mutex.
-	if (mutex->taskBlock == OS_currentTCB()) {
-		// Decrement the mutex counter, indicating a release attempt.
-		mutex->counter--;
-		// If the counter reaches zero, it means there are no more nested locks on the mutex.
-		if (!mutex->counter) {
-			// Set the mutex's task block to zero, effectively freeing the mutex.
-			mutex->taskBlock = 0;
-			OS_notify(mutex);
-		}
+	mutex->counter--;
+	// If the counter reaches zero, it means there are no more nested locks on the mutex.
+	if (!mutex->counter) {
+		// Set the mutex's task block to zero, effectively freeing the mutex.
+		mutex->taskBlock = 0;
+		OS_notify(mutex);
 	}
 	// Yield the processor after releasing the mutex to allow other tasks to run.
 	// This is important for ensuring fair scheduling and preventing a single task
@@ -50,7 +47,8 @@ void _OS_wait_delegate(_OS_SVC_StackFrame_t *svcStack) {
 	if (svcStack->r0 == notificationCounter) {
 		OS_TCB_t * currentTask = OS_currentTCB();
 		list_remove(&task_list, currentTask);
-		list_push_sl(waitingList, currentTask);
+		list_add(waitingList, currentTask);
+		//list_push_sl(waitingList, currentTask);
     
 		// setting the PendSV bit to trigger a context switch
 		SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
@@ -59,11 +57,38 @@ void _OS_wait_delegate(_OS_SVC_StackFrame_t *svcStack) {
 
 void OS_notify(OS_mutex_t *mutex) {
 	notificationCounter++;
-	OS_TCB_t * task = list_pop_sl(&mutex->waitingList);
+	OS_TCB_t * task = list_pop_tail_dl(&mutex->waitingList);
 	if (task) {
 		list_push_sl(&pending_list, task);
 	}
 }
+
+OS_TCB_t* list_pop_tail_dl(_OS_tasklist_t *list) {
+	// List is empty
+	if (!list->head) {
+		return 0;
+	}
+	// Get the current tail
+	OS_TCB_t *tail = list->head->prev;
+	// List will be empty after pop
+	if (tail == list->head) {
+		list->head = 0;
+	}
+	// Get the new tail
+	else {
+		OS_TCB_t *newTail = tail->prev;
+		newTail->next = list->head;
+		list->head->prev = newTail;
+	}
+    
+	// Disconnect the popped tail from the list
+	tail->next = 0;
+	tail->prev = 0;
+	return tail;
+}
+
+
+
 
 /*
 	We need to be pushing onto the head of the list and popping the tail of the list instead.

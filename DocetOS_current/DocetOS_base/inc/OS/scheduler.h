@@ -69,6 +69,7 @@ extern _OS_tasklist_t pending_list;
 void list_push_sl(_OS_tasklist_t *list, OS_TCB_t *task);
 OS_TCB_t* list_pop_sl(_OS_tasklist_t *list);
 void list_remove(_OS_tasklist_t *list, OS_TCB_t *task);
+void list_add(_OS_tasklist_t *list, OS_TCB_t *task);
 
 /* SVC delegates */
 void _OS_taskExit_delegate(void);
