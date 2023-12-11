@@ -10,7 +10,7 @@ __attribute__((noreturn))
 static void task1(void const *const args) {
 	(void) args;
 	while (1) {
-		OS_sleep(1000);
+		OS_sleep(5);
 		OS_mutex_acquire(&mutex);
 		printf("AAAAAAAA\n");
 		OS_mutex_release(&mutex);
@@ -21,7 +21,7 @@ __attribute__((noreturn))
 static void task2(void const *const args) {
 	(void) args;
 	while (1) {
-		OS_sleep(2000);
+		OS_sleep(5);
 		OS_mutex_acquire(&mutex);
 		printf("BBBBBBBB\n");
 		OS_mutex_release(&mutex);
@@ -32,7 +32,7 @@ __attribute__((noreturn))
 static void task3(void const *const args) {
 	(void) args;
 	while (1) {
-		OS_sleep(3000);
+		OS_sleep(5);
 		OS_mutex_acquire(&mutex);
 		printf("CCCCCCCC\n");
 		OS_mutex_release(&mutex);
@@ -72,3 +72,9 @@ int main(void) {
 	OS_start();
 	
 }
+/*
+	https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/bd0f87c18b292f45ebf4d4b4c5bb96765465f760/examples/sample_configuration/FreeRTOSConfig.h
+	https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/bd0f87c18b292f45ebf4d4b4c5bb96765465f760/portable/Tasking/ARM_CM4F/port_asm.asm
+	https://www.freertos.org/RTOS-task-priority.html
+	https://www.freertos.org/fr-content-src/uploads/2018/07/FreeRTOS_Reference_Manual_V10.0.0.pdf
+*/

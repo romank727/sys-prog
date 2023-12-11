@@ -65,3 +65,13 @@ void OS_notify(OS_mutex_t *mutex) {
 	}
 }
 
+/*
+	We need to be pushing onto the head of the list and popping the tail of the list instead.
+	At the moment we are pushing and popping the head of the waiting list, hence why the tasks don't 
+	run as expected without the "OS_sleep". 
+	Also, the waiting list needs to be a doubly linked list instead of a single linked, since
+	we need to know where the tail of the list is.
+	Because when popping from the list, we can just do "list.head->prev" or something similar.
+	This should hopefully fix the task mutex issue without the "OS_sleep" call in main.c
+*/
+

@@ -1,6 +1,7 @@
 #include "OS/sleep.h"
 #include "OS/os.h"
 
+// Function to perform correct insertion sort into "sleeping list".
 void sort_sleep_list(void *taskToInsert) {
 	OS_TCB_t * insertTask = (OS_TCB_t *) taskToInsert;
 	// extract the wake-up time from the task's data field.
