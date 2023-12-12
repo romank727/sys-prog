@@ -47,8 +47,8 @@ void _OS_wait_delegate(_OS_SVC_StackFrame_t *svcStack) {
 	if (svcStack->r0 == notificationCounter) {
 		OS_TCB_t * currentTask = OS_currentTCB();
 		list_remove(&task_list, currentTask);
-		list_add(waitingList, currentTask);
-		//list_push_sl(waitingList, currentTask);
+		//list_add(waitingList, currentTask);
+		list_push_sl(waitingList, currentTask);
     
 		// setting the PendSV bit to trigger a context switch
 		SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
@@ -57,7 +57,14 @@ void _OS_wait_delegate(_OS_SVC_StackFrame_t *svcStack) {
 
 void OS_notify(OS_mutex_t *mutex) {
 	notificationCounter++;
-	OS_TCB_t * task = list_pop_tail_dl(&mutex->waitingList);
+	//OS_TCB_t * task = list_pop_tail_dl(&mutex->waitingList);
+	/*
+		Need to figure out a way to always pop the tail of the single
+		linked list, instead of the head. 
+		Task 3 is pretty much always in the waiting list, but
+		never actually gets put back into the task list, hence why we never see it printed.
+	*/
+	OS_TCB_t * task = list_pop_sl(&mutex->waitingList);
 	if (task) {
 		list_push_sl(&pending_list, task);
 	}

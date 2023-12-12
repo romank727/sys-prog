@@ -88,6 +88,7 @@ int main(void) {
 }
 /*
 	https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/bd0f87c18b292f45ebf4d4b4c5bb96765465f760/examples/sample_configuration/FreeRTOSConfig.h
+	https://www.freertos.org/a00110.html
 	https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/bd0f87c18b292f45ebf4d4b4c5bb96765465f760/portable/Tasking/ARM_CM4F/port_asm.asm
 	https://www.freertos.org/RTOS-task-priority.html
 	https://www.freertos.org/fr-content-src/uploads/2018/07/FreeRTOS_Reference_Manual_V10.0.0.pdf

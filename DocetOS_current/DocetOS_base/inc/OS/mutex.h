@@ -14,7 +14,7 @@ typedef struct s_OS_mutex_t {
 	_OS_tasklist_t waitingList;
 } OS_mutex_t;
 
-#define OS_MUTEX_STATIC_INITIALISER {.taskBlock = 0, .counter = 0, .waitingList = {0}}
+#define OS_MUTEX_STATIC_INITIALISER {.taskBlock = 0, .counter = 0, .waitingList = {.head = 0}}
 
 // Acquire a mutex. If the mutex is already held, the calling task will be blocked
 // until the mutex becomes available.
