@@ -49,6 +49,7 @@ PendSV_Handler
     STMFD   sp!, {r4, lr} ; r4 included for stack alignment
     BL      _OS_schedule
     LDMFD   sp!, {r4, lr}
+; will maybe need to add r14 to stackframe in os.h after r11, then push and pop explicitly with the other core registers.
 _task_switch
     ; r0 contains nextTCB (OS_TCB *)
     ; Load r2 = &_currentTCB (OS_TCB **), r1 = _currentTCB (OS_TCB *, == OS_StackFrame **)
@@ -59,6 +60,7 @@ _task_switch
     BXEQ    lr
     ; If not, stack remaining process registers (pc, PSR, lr, r0-r3, r12 already stacked)
     MRS     r3, PSP
+	; push fpu register here maybe
     STMFD   r3!, {r4-r11}
     ; Store stack pointer
     STR     r3, [r1]
@@ -66,6 +68,9 @@ _task_switch
     LDR     r3, [r0]
     ; Unstack process registers
     LDMFD   r3!, {r4-r11}
+	; r3 address -> move by offset to point to r14 (lr) only when popping perhaps, not sure yet
+	; offset would be 14 * 32 (bits of each element in stack)
+	; pop fpu here maybe
     MSR     PSP, r3
     ; Update _currentTCB
     STR     r0, [r2]

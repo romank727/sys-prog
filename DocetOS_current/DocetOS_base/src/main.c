@@ -50,6 +50,17 @@ static void task4(void const *const args) {
 	}
 }
 
+__attribute__((noreturn))
+static void task5(void const *const args) {
+	(void) args;
+	while (1) {
+		//OS_sleep(5);
+		OS_mutex_acquire(&mutex);
+		printf("EEEEEEEE\n");
+		OS_mutex_release(&mutex);
+	}
+}
+
 /* MAIN FUNCTION */
 
 int main(void) {
@@ -65,7 +76,8 @@ int main(void) {
 	static uint32_t stack2[128] __attribute__ (( aligned(8) ));
 	static uint32_t stack3[128] __attribute__ (( aligned(8) ));
 	static uint32_t stack4[128] __attribute__ (( aligned(8) ));
-	static OS_TCB_t TCB1, TCB2, TCB3, TCB4;
+	static uint32_t stack5[128] __attribute__ (( aligned(8) ));
+	static OS_TCB_t TCB1, TCB2, TCB3, TCB4, TCB5;
 
 	/* Initialise the TCBs using the two functions above */
 	
@@ -73,13 +85,15 @@ int main(void) {
 	OS_initialiseTCB(&TCB2, stack2+128, task2, NULL);
 	OS_initialiseTCB(&TCB3, stack3+128, task3, NULL);
 	OS_initialiseTCB(&TCB4, stack4+128, task4, NULL);
+	OS_initialiseTCB(&TCB5, stack5+128, task5, NULL);
 	
 	/* Add the tasks to the scheduler */
 	
 	OS_addTask(&TCB1);
 	OS_addTask(&TCB2);
 	OS_addTask(&TCB3);
-	//OS_addTask(&TCB4);
+	OS_addTask(&TCB4);
+	OS_addTask(&TCB5);
 	
 	/* Start the OS */
 	

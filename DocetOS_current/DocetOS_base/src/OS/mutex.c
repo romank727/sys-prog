@@ -1,7 +1,7 @@
 #include "OS/mutex.h"
 
 static uint32_t notificationCounter = 0;
-OS_TCB_t* list_pop_tail_dl(_OS_tasklist_t *list);
+OS_TCB_t* list_pop_tail_sl(_OS_tasklist_t *list);
 
 void OS_mutex_acquire (OS_mutex_t * mutex) {
 	OS_TCB_t *currentTCB = OS_currentTCB();
@@ -47,7 +47,6 @@ void _OS_wait_delegate(_OS_SVC_StackFrame_t *svcStack) {
 	if (svcStack->r0 == notificationCounter) {
 		OS_TCB_t * currentTask = OS_currentTCB();
 		list_remove(&task_list, currentTask);
-		//list_add(waitingList, currentTask);
 		list_push_sl(waitingList, currentTask);
     
 		// setting the PendSV bit to trigger a context switch
@@ -57,53 +56,54 @@ void _OS_wait_delegate(_OS_SVC_StackFrame_t *svcStack) {
 
 void OS_notify(OS_mutex_t *mutex) {
 	notificationCounter++;
-	//OS_TCB_t * task = list_pop_tail_dl(&mutex->waitingList);
-	/*
-		Need to figure out a way to always pop the tail of the single
-		linked list, instead of the head. 
-		Task 3 is pretty much always in the waiting list, but
-		never actually gets put back into the task list, hence why we never see it printed.
-	*/
-	OS_TCB_t * task = list_pop_sl(&mutex->waitingList);
+	OS_TCB_t * task = list_pop_tail_sl(&mutex->waitingList);
 	if (task) {
 		list_push_sl(&pending_list, task);
 	}
 }
 
-OS_TCB_t* list_pop_tail_dl(_OS_tasklist_t *list) {
-	// List is empty
-	if (!list->head) {
-		return 0;
-	}
-	// Get the current tail
-	OS_TCB_t *tail = list->head->prev;
-	// List will be empty after pop
-	if (tail == list->head) {
-		list->head = 0;
-	}
-	// Get the new tail
-	else {
-		OS_TCB_t *newTail = tail->prev;
-		newTail->next = list->head;
-		list->head->prev = newTail;
-	}
-    
-	// Disconnect the popped tail from the list
-	tail->next = 0;
-	tail->prev = 0;
+/*
+	1. Atomically load the current head
+	2. If list is empty, return null
+	3. If the list contains only one item, atomically set the head to null.
+		 Return the only item (head and tail of the list)
+	4. Find tail->prev. If the list has more than one item, find node before tail.
+		 Doing it this way because it's hard to find tail in a singly linked list.
+	5. Making sure that we're updating the list atomically. do...while will only do this
+		 if the exclusive flag is set.
+	6. After do...while, remove the tail and set a new tail in the list.
+	7. Pop and return the correct tail as needed.
+*/
+OS_TCB_t* list_pop_tail_sl(_OS_tasklist_t *list) {
+	OS_TCB_t *oldHead = 0;
+	OS_TCB_t *current = 0;
+	do {
+		// atomically load the current head of the list
+		oldHead = (OS_TCB_t *) __LDREXW ((uint32_t volatile *)&(list->head));
+		// if the list is empty, return null
+		if (!oldHead) {
+			return 0;
+		}
+		// if there's only one item in the list
+		if (!oldHead->next) {
+			// attempt to atomically set the list head to null
+			if (__STREXW((uint32_t)0, (uint32_t volatile *)&(list->head)) == 0) {
+				return oldHead; // successfully removed the only item
+			}
+			continue; // exclusive access was lost, retry
+		}
+		// find the second-to-last item in the list
+		current = oldHead;
+		while (current->next && current->next->next) {
+			current = current->next;
+		}
+		// the above loop exits with 'current' being the second-to-last node
+	}	
+	while (__STREXW((uint32_t)oldHead, (uint32_t volatile *)&(list->head)));
+	// 'current' is now the second-to-last node, and 'tail' is the last node
+	OS_TCB_t *tail = current->next;
+	// remove the last node from the list
+	current->next = 0;
+	// return the removed tail node
 	return tail;
 }
-
-
-
-
-/*
-	We need to be pushing onto the head of the list and popping the tail of the list instead.
-	At the moment we are pushing and popping the head of the waiting list, hence why the tasks don't 
-	run as expected without the "OS_sleep". 
-	Also, the waiting list needs to be a doubly linked list instead of a single linked, since
-	we need to know where the tail of the list is.
-	Because when popping from the list, we can just do "list.head->prev" or something similar.
-	This should hopefully fix the task mutex issue without the "OS_sleep" call in main.c
-*/
-
