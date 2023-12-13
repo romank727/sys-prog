@@ -1,8 +1,8 @@
 Dependencies for Project 'DocetOS', Target 'STM32F407 Flash': (DO NOT MODIFY !)
 CompilerVersion: 6190000::V6.19::ARMCLANG
-F (.\src\main.c)(0x6578B5E4)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O0 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I inc -Wno-declaration-after-statement-I./RTE/_STM32F407_Flash-IC:/Users/Roman/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Users/Roman/AppData/Local/Arm/Packs/Keil/STM32F4xx_DFP/2.17.1/Drivers/CMSIS/Device/ST/STM32F4xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F407xx -D_RTE_ -DHSE_VALUE="8000000" -DPLL_M="8" -DPLL_N="336" -DPLL_P="2" -DPLL_Q="7"-o ./objects/main.o -MD)
+F (.\src\main.c)(0x65793C59)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O0 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I inc -Wno-declaration-after-statement-I./RTE/_STM32F407_Flash-IC:/Users/Roman/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Users/Roman/AppData/Local/Arm/Packs/Keil/STM32F4xx_DFP/2.17.1/Drivers/CMSIS/Device/ST/STM32F4xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F407xx -D_RTE_ -DHSE_VALUE="8000000" -DPLL_M="8" -DPLL_N="336" -DPLL_P="2" -DPLL_Q="7"-o ./objects/main.o -MD)
 I (inc\OS\mutex.h)(0x6578A464)
-I (inc\OS\os.h)(0x6575E985)
+I (inc\OS\os.h)(0x65793DF8)
 I (inc\OS\scheduler.h)(0x65776A07)
 I (C:\Keil_v5\ARM\ARMCLANG\include\stdint.h)(0x6388AB78)
 I (C:\Users\Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_compiler.h)(0x626FAD4E)
@@ -17,7 +17,7 @@ I (inc\Utils\utils.h)(0x65648CFE)
 I (C:\Keil_v5\ARM\ARMCLANG\include\stdio.h)(0x6388AB78)
 I (C:\Keil_v5\ARM\ARMCLANG\include\inttypes.h)(0x6388AB78)
 F (.\src\OS\scheduler.c)(0x65777863)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O0 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I inc -Wno-declaration-after-statement-I./RTE/_STM32F407_Flash-IC:/Users/Roman/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Users/Roman/AppData/Local/Arm/Packs/Keil/STM32F4xx_DFP/2.17.1/Drivers/CMSIS/Device/ST/STM32F4xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F407xx -D_RTE_ -DHSE_VALUE="8000000" -DPLL_M="8" -DPLL_N="336" -DPLL_P="2" -DPLL_Q="7"-o ./objects/scheduler.o -MD)
-I (inc\OS\os.h)(0x6575E985)
+I (inc\OS\os.h)(0x65793DF8)
 I (inc\OS\scheduler.h)(0x65776A07)
 I (C:\Keil_v5\ARM\ARMCLANG\include\stdint.h)(0x6388AB78)
 I (C:\Users\Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_compiler.h)(0x626FAD4E)
@@ -30,7 +30,7 @@ I (C:\Users\Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cms
 I (C:\Users\Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\mpu_armv7.h)(0x626FAD4E)
 I (C:\Users\Roman\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h)(0x6374AC5A)
 F (.\src\OS\os.c)(0x656CFB1C)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O0 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I inc -Wno-declaration-after-statement-I./RTE/_STM32F407_Flash-IC:/Users/Roman/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Users/Roman/AppData/Local/Arm/Packs/Keil/STM32F4xx_DFP/2.17.1/Drivers/CMSIS/Device/ST/STM32F4xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F407xx -D_RTE_ -DHSE_VALUE="8000000" -DPLL_M="8" -DPLL_N="336" -DPLL_P="2" -DPLL_Q="7"-o ./objects/os.o -MD)
-I (inc\OS\os.h)(0x6575E985)
+I (inc\OS\os.h)(0x65793DF8)
 I (inc\OS\scheduler.h)(0x65776A07)
 I (C:\Keil_v5\ARM\ARMCLANG\include\stdint.h)(0x6388AB78)
 I (C:\Users\Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_compiler.h)(0x626FAD4E)
@@ -42,7 +42,7 @@ I (C:\Users\Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cms
 I (C:\Users\Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\mpu_armv7.h)(0x626FAD4E)
 I (C:\Users\Roman\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h)(0x6374AC5A)
 I (C:\Keil_v5\ARM\ARMCLANG\include\stdlib.h)(0x6388AB78)
-F (.\src\OS\os_asm.s)(0x6571E9F7)(--cpu Cortex-M4 --fpu=SoftVFP --pd "__EVAL SETA 1" -g --diag_suppress=A1950W-I.\RTE\_STM32F407_Flash-IC:\Users\Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\Roman\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device\ST\STM32F4xx\Include--pd "__UVISION_VERSION SETA 538"--pd "_RTE_ SETA 1"--pd "STM32F407xx SETA 1"--pd "_RTE_ SETA 1"--list .\listings\os_asm.lst--xref -o .\objects\os_asm.o--depend .\objects\os_asm.d)
+F (.\src\OS\os_asm.s)(0x65793DF4)(--cpu Cortex-M4 --fpu=SoftVFP --pd "__EVAL SETA 1" -g --diag_suppress=A1950W-I.\RTE\_STM32F407_Flash-IC:\Users\Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\Roman\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device\ST\STM32F4xx\Include--pd "__UVISION_VERSION SETA 538"--pd "_RTE_ SETA 1"--pd "STM32F407xx SETA 1"--pd "_RTE_ SETA 1"--list .\listings\os_asm.lst--xref -o .\objects\os_asm.o--depend .\objects\os_asm.d)
 F (.\src\OS\sleep.c)(0x6577347A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O0 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I inc -Wno-declaration-after-statement-I./RTE/_STM32F407_Flash-IC:/Users/Roman/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Users/Roman/AppData/Local/Arm/Packs/Keil/STM32F4xx_DFP/2.17.1/Drivers/CMSIS/Device/ST/STM32F4xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F407xx -D_RTE_ -DHSE_VALUE="8000000" -DPLL_M="8" -DPLL_N="336" -DPLL_P="2" -DPLL_Q="7"-o ./objects/sleep.o -MD)
 I (inc\OS\sleep.h)(0x6571EAB1)
 I (C:\Users\Roman\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x6374AC5A)
@@ -54,13 +54,13 @@ I (C:\Users\Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cms
 I (C:\Users\Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_armclang.h)(0x626FAD4E)
 I (C:\Users\Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\mpu_armv7.h)(0x626FAD4E)
 I (C:\Users\Roman\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h)(0x6374AC5A)
-I (inc\OS\os.h)(0x6575E985)
+I (inc\OS\os.h)(0x65793DF8)
 I (inc\OS\scheduler.h)(0x65776A07)
 F (.\inc\OS\sleep.h)(0x6571EAB1)()
 F (.\inc\OS\mutex.h)(0x6578A464)()
-F (.\src\OS\mutex.c)(0x6578B229)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O0 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I inc -Wno-declaration-after-statement-I./RTE/_STM32F407_Flash-IC:/Users/Roman/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Users/Roman/AppData/Local/Arm/Packs/Keil/STM32F4xx_DFP/2.17.1/Drivers/CMSIS/Device/ST/STM32F4xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F407xx -D_RTE_ -DHSE_VALUE="8000000" -DPLL_M="8" -DPLL_N="336" -DPLL_P="2" -DPLL_Q="7"-o ./objects/mutex.o -MD)
+F (.\src\OS\mutex.c)(0x6578C6A2)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=none -mfloat-abi=soft -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O0 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I inc -Wno-declaration-after-statement-I./RTE/_STM32F407_Flash-IC:/Users/Roman/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Users/Roman/AppData/Local/Arm/Packs/Keil/STM32F4xx_DFP/2.17.1/Drivers/CMSIS/Device/ST/STM32F4xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F407xx -D_RTE_ -DHSE_VALUE="8000000" -DPLL_M="8" -DPLL_N="336" -DPLL_P="2" -DPLL_Q="7"-o ./objects/mutex.o -MD)
 I (inc\OS\mutex.h)(0x6578A464)
-I (inc\OS\os.h)(0x6575E985)
+I (inc\OS\os.h)(0x65793DF8)
 I (inc\OS\scheduler.h)(0x65776A07)
 I (C:\Keil_v5\ARM\ARMCLANG\include\stdint.h)(0x6388AB78)
 I (C:\Users\Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_compiler.h)(0x626FAD4E)

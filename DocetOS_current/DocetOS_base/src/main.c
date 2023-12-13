@@ -92,8 +92,8 @@ int main(void) {
 	OS_addTask(&TCB1);
 	OS_addTask(&TCB2);
 	OS_addTask(&TCB3);
-	OS_addTask(&TCB4);
-	OS_addTask(&TCB5);
+	//OS_addTask(&TCB4);
+	//OS_addTask(&TCB5);
 	
 	/* Start the OS */
 	
