@@ -18,7 +18,11 @@ void OS_mutex_acquire (OS_mutex_t * mutex) {
 			// If STREXW fails, the loop will continue, trying to acquire the mutex again.
 		}
 		// If the mutex's TCB field is not zero and not equal to the current TCB:
-		else if (head != currentTCB) {
+		else if (head == currentTCB) {
+			// address the issue if the same task tries to get the mutex
+			break;
+		}
+		else {
 			// Call OS_wait() since the mutex is currently held by another task.
 			OS_wait(notificationCounter, (uint32_t)&(mutex->waitingList));
 		}
@@ -98,7 +102,7 @@ OS_TCB_t* list_pop_tail_sl(_OS_tasklist_t *list) {
 			current = current->next;
 		}
 		// the above loop exits with 'current' being the second-to-last node
-	}	
+	}
 	while (__STREXW((uint32_t)oldHead, (uint32_t volatile *)&(list->head)));
 	// 'current' is now the second-to-last node, and 'tail' is the last node
 	OS_TCB_t *tail = current->next;

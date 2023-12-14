@@ -14,6 +14,7 @@ static void task1(void const *const args) {
 		OS_mutex_acquire(&mutex);
 		printf("AAAAAAAA\n");
 		OS_mutex_release(&mutex);
+
 	}
 }
 
