@@ -16,13 +16,7 @@ int main(void) {
 	configUSART2(38400);
 
 	/* Declare and intialise a memory pool */
-	static mempool_t pool = MEMPOOL_INITIALISER;
-//	static packet_t poolElements[10];
-
-//	for (int i = 0; i < 10; ++i) {
-//		pool_add(&pool, &poolElements[i]);
-//	}
-	
+	static mempool_t pool = MEMPOOL_INITIALISER;	
 	pool_init(&pool, sizeof(packet_t), 30);
 	
 	/* Example use of the pool */

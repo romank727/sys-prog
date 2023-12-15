@@ -21,13 +21,66 @@ Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.1.0.0
 Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
-F:\Coding\Sys. Prog\sys-prog\Allocation\mempool\mempool.uvprojx
+F:\Coding\Sys. Prog\sys-prog\Labs\Allocation\mempool\mempool.uvprojx
 Project File Date:  10/18/2023
 
 <h2>Output:</h2>
 *** Using Compiler 'V6.19', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
-Build target 'STM32F407 Flash'
-".\Objects\mempool.axf" - 0 Error(s), 0 Warning(s).
+Rebuild target 'STM32F407 Flash'
+compiling static_alloc.c...
+compiling mempool.c...
+src/Utils/hardfault.c(16): warning: variable 'stacked_r0' set but not used [-Wunused-but-set-variable]
+        volatile uint32_t stacked_r0 ;
+                          ^
+src/Utils/hardfault.c(17): warning: variable 'stacked_r1' set but not used [-Wunused-but-set-variable]
+        volatile uint32_t stacked_r1 ;
+                          ^
+src/Utils/hardfault.c(18): warning: variable 'stacked_r2' set but not used [-Wunused-but-set-variable]
+        volatile uint32_t stacked_r2 ;
+                          ^
+src/Utils/hardfault.c(19): warning: variable 'stacked_r3' set but not used [-Wunused-but-set-variable]
+        volatile uint32_t stacked_r3 ;
+                          ^
+src/Utils/hardfault.c(20): warning: variable 'stacked_r12' set but not used [-Wunused-but-set-variable]
+        volatile uint32_t stacked_r12 ;
+                          ^
+src/Utils/hardfault.c(21): warning: variable 'stacked_lr' set but not used [-Wunused-but-set-variable]
+        volatile uint32_t stacked_lr ;
+                          ^
+src/Utils/hardfault.c(22): warning: variable 'stacked_pc' set but not used [-Wunused-but-set-variable]
+        volatile uint32_t stacked_pc ;
+                          ^
+src/Utils/hardfault.c(23): warning: variable 'stacked_psr' set but not used [-Wunused-but-set-variable]
+        volatile uint32_t stacked_psr ;
+                          ^
+src/Utils/hardfault.c(24): warning: variable '_CFSR' set but not used [-Wunused-but-set-variable]
+        volatile uint32_t _CFSR ;
+                          ^
+src/Utils/hardfault.c(25): warning: variable '_HFSR' set but not used [-Wunused-but-set-variable]
+        volatile uint32_t _HFSR ;
+                          ^
+src/Utils/hardfault.c(26): warning: variable '_DFSR' set but not used [-Wunused-but-set-variable]
+        volatile uint32_t _DFSR ;
+                          ^
+src/Utils/hardfault.c(27): warning: variable '_AFSR' set but not used [-Wunused-but-set-variable]
+        volatile uint32_t _AFSR ;
+                          ^
+src/Utils/hardfault.c(28): warning: variable '_BFAR' set but not used [-Wunused-but-set-variable]
+        volatile uint32_t _BFAR ;
+                          ^
+src/Utils/hardfault.c(29): warning: variable '_MMAR' set but not used [-Wunused-but-set-variable]
+        volatile uint32_t _MMAR ;
+                          ^
+14 warnings generated.
+compiling hardfault.c...
+compiling main.c...
+compiling utils.c...
+assembling startup_stm32f407xx.s...
+compiling retarget_io.c...
+compiling system_stm32f4xx.c...
+linking...
+Program Size: Code=11528 RO-data=1300 RW-data=116 ZI-data=18276  
+".\Objects\mempool.axf" - 0 Error(s), 14 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -61,13 +114,13 @@ Package Vendor: Keil
 
    * Component: Keil.ARM Compiler::Compiler:I/O:STDOUT:User:1.2.0
       Source file:   Source/retarget_io.c
-      Source file:   Template/stdout_USART.c
       Source file:   Template/stdout_user.c
+      Source file:   Template/stdout_USART.c
       Source file:   Template/stdout_display.c
 
    * Component: Keil.ARM Compiler::Compiler:I/O:TTY:User:1.2.0
-      Source file:   Source/retarget_io.c
       Source file:   Template/tty_user.c
+      Source file:   Source/retarget_io.c
 
    * Component: Keil::Device:Startup:2.6.3
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f407xx.s
@@ -75,7 +128,7 @@ Package Vendor: Keil
       Include file:  Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
       Source file:   MDK/Device/Source/ARM/STM32F40xxx_41xxx_OPT.s
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>
