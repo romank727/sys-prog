@@ -16,7 +16,7 @@
 	 OS_schedule() in this implementation.
 */
 
-_OS_tasklist_t task_list = {.head = 0};
+_OS_tasklist_t task_queues[MAX_PRIORITY_LEVELS];
 _OS_tasklist_t pending_list = {.head = 0};
 _OS_tasklist_t sleep_list = {.head = 0};
 
@@ -82,36 +82,39 @@ OS_TCB_t* list_pop_sl(_OS_tasklist_t *list) {
 
 /* Round-robin scheduler */
 OS_TCB_t const * _OS_schedule(void) {
-	// wake up tasks if needed
 	while (sleep_list.head && (sleep_list.head->data <= OS_elapsedTicks())) {
 		OS_TCB_t *taskToWake = list_pop_sl(&sleep_list);
 		taskToWake->state &= ~TASK_STATE_SLEEP;
 		list_push_sl(&pending_list, taskToWake);
 	}
 	
-	// removes all tasks from pending list and adds them to the round-robin list
+	// Process pending list
 	while (pending_list.head) {
-		list_add(&task_list, list_pop_sl(&pending_list));
+		OS_TCB_t *taskToProcess = list_pop_sl(&pending_list);
+		list_add(&task_queues[taskToProcess->priority], taskToProcess);
 	}
 	
-	// Check if there is at least one task in the round-robin list.
-	if (task_list.head) {
-		// Advance to the next task in the list.
-		task_list.head = task_list.head->next;
-		// Clear the yield flag since we're about to schedule this task now.
-		task_list.head->state &= ~TASK_STATE_YIELD;
-		// Return the current task, which is either not asleep or has just been woken up.
-		return task_list.head;
+	// Iterate through all priority levels, starting from the highest
+	for (int prio = MAX_PRIORITY_LEVELS - 1; prio >= 0; prio--) {
+		// Implement round-robin within this priority level
+		if (task_queues[prio].head) {
+			// Move the head to the next task in the queue
+			task_queues[prio].head = task_queues[prio].head->next;
+			// Clear the yield flag and return the task
+			task_queues[prio].head->state &= ~TASK_STATE_YIELD;
+			return task_queues[prio].head;
+		}
 	}
-	// If no runnable tasks are found, or all tasks are asleep, return the idle task.
-  return _OS_idleTCB_p;
+	// If no runnable tasks are found in any priority queue
+	return _OS_idleTCB_p;
 }
 
 /* Initialises a task control block (TCB) and its associated stack.  See os.h for details. */
-void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func)(void const * const), void const * const data) {
+void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func)(void const * const), void const * const data, uint32_t priority) {
 	TCB->sp = stack - (sizeof(_OS_StackFrame_t) / sizeof(uint32_t));
 	TCB->state = 0;
 	TCB->prev = TCB->next = 0;
+	TCB->priority = priority;
 	_OS_StackFrame_t *sf = (_OS_StackFrame_t *)(TCB->sp);
 	/* By placing the address of the task function in pc, and the address of _OS_task_end() in lr, the task
 	   function will be executed on the first context switch, and if it ever exits, _OS_task_end() will be
@@ -138,7 +141,9 @@ void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func
 
 /* 'Add task' */
 void OS_addTask(OS_TCB_t * const tcb) {
-	list_add(&task_list, tcb);
+	if (tcb->priority < MAX_PRIORITY_LEVELS) {
+		list_add(&task_queues[tcb->priority], tcb);
+	}
 }
 
 /* SVC handler that's called by _OS_task_end when a task finishes.  Removes the
@@ -146,6 +151,10 @@ void OS_addTask(OS_TCB_t * const tcb) {
 void _OS_taskExit_delegate(void) {
 	// Remove the given TCB from the list of tasks so it won't be run again
 	OS_TCB_t * tcb = OS_currentTCB();
-	list_remove(&task_list, tcb);
+	// Check if the task's priority is within the valid range
+	if (tcb->priority < MAX_PRIORITY_LEVELS) {
+		// Remove the task from its priority queue
+		list_remove(&task_queues[tcb->priority], tcb);
+	}
 	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
 }

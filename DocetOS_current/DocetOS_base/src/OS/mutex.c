@@ -50,9 +50,12 @@ void _OS_wait_delegate(_OS_SVC_StackFrame_t *svcStack) {
 
 	if (svcStack->r0 == notificationCounter) {
 		OS_TCB_t * currentTask = OS_currentTCB();
-		list_remove(&task_list, currentTask);
+		// Check if the task's priority is within the valid range
+		if (currentTask->priority < MAX_PRIORITY_LEVELS) {
+			// Remove the current task from its priority queue
+			list_remove(&task_queues[currentTask->priority], currentTask);
+		}
 		list_push_sl(waitingList, currentTask);
-    
 		// setting the PendSV bit to trigger a context switch
 		SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
 	}

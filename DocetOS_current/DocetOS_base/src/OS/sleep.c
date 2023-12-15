@@ -8,7 +8,7 @@ void sort_sleep_list(void *taskToInsert) {
 	uint32_t taskWakeUpTime = insertTask->data;
   // check if the list is empty or if this task needs to wake up earlier 
   // than the current head of the list.	
-	if(!sleep_list.head || taskWakeUpTime <= sleep_list.head->data) {
+	if (!sleep_list.head || taskWakeUpTime <= sleep_list.head->data) {
 		// If the list is empty or the task wakes up earlier than the current first task,
 		// use list_push_sl to add it to the front of the list.
 		list_push_sl(&sleep_list, insertTask);
@@ -41,7 +41,12 @@ void OS_sleep_delegate(_OS_SVC_StackFrame_t *svcStack) {
 	// indicate the current task state to be sleeping
 	currentTask->state |= TASK_STATE_SLEEP;
 	
-	list_remove(&task_list, currentTask);
+	// Check if the task's priority is within the valid range
+	if (currentTask->priority < MAX_PRIORITY_LEVELS) {
+		// Remove the current task from its priority queue
+		list_remove(&task_queues[currentTask->priority], currentTask);
+	}
+	
 	// put the task into the sleep list while also keeping it sorted on insertion
 	sort_sleep_list(currentTask);
 	

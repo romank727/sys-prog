@@ -1,6 +1,8 @@
 #ifndef __scheduler_h__
 #define __scheduler_h__
 
+#define MAX_PRIORITY_LEVELS 5
+
 #include <stdint.h>
 
 /*========================*/
@@ -22,6 +24,7 @@ typedef struct s_OS_TCB_t {
 	uint32_t volatile data;
 	struct s_OS_TCB_t * prev;
 	struct s_OS_TCB_t * next;
+	uint32_t priority;
 } OS_TCB_t;
 
 
@@ -40,7 +43,7 @@ typedef struct s_OS_TCB_t {
      to this function.
    The third argument is a pointer to the function that the task should execute.
    The fourth argument is a void pointer to data that the task should receive. */
-void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func)(void const * const), void const * const data);
+void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func)(void const * const), void const * const data, uint32_t priority);
 
 /*
 	Create another argument field inside "OS_initialiseTCB", which will take in a fixed priority. 
@@ -62,7 +65,7 @@ typedef struct {
 	OS_TCB_t * volatile head;
 } _OS_tasklist_t;
 
-extern _OS_tasklist_t task_list;
+extern _OS_tasklist_t task_queues[MAX_PRIORITY_LEVELS];
 extern _OS_tasklist_t sleep_list;
 extern _OS_tasklist_t pending_list;
 
