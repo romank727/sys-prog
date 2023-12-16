@@ -17,6 +17,7 @@
     IMPORT _OS_schedule_delegate
 	IMPORT _OS_wait_delegate
 	IMPORT OS_sleep_delegate
+	IMPORT _OS_wait_semph_delegate
     
 SVC_Handler
 	; r7 contains requested handler, on entry
@@ -42,6 +43,7 @@ SVC_tableStart
     DCD _OS_schedule_delegate
 	DCD _OS_wait_delegate
 	DCD OS_sleep_delegate
+	DCD _OS_wait_semph_delegate
 SVC_tableEnd
 
     ALIGN
@@ -60,7 +62,6 @@ _task_switch
     BXEQ    lr
     ; If not, stack remaining process registers (pc, PSR, lr, r0-r3, r12 already stacked)
     MRS     r3, PSP
-	; push fpu register here maybe
     STMFD   r3!, {r4-r11}
     ; Store stack pointer
     STR     r3, [r1]
@@ -68,9 +69,6 @@ _task_switch
     LDR     r3, [r0]
     ; Unstack process registers
     LDMFD   r3!, {r4-r11}
-	; r3 address -> move by offset to point to r14 (lr) only when popping perhaps, not sure yet
-	; offset would be 14 * 32 (bits of each element in stack)
-	; pop fpu here maybe
     MSR     PSP, r3
     ; Update _currentTCB
     STR     r0, [r2]

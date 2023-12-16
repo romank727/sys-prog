@@ -21,6 +21,7 @@ enum OS_SVC_e {
 	OS_SVC_SCHEDULE,
 	OS_SVC_WAIT,
 	OS_SVC_SLEEP,
+	OS_SVC_WAIT_SEMAPHORE,
 };
 
 /***************************/
@@ -60,6 +61,8 @@ uint32_t OS_elapsedTicks(void);
 #define OS_sleep(sleepNum) _svc_1(sleepNum, OS_SVC_SLEEP)
 
 #define OS_wait(notifCounter, mutexWaitList) _svc_2(notifCounter, mutexWaitList, OS_SVC_WAIT)
+
+#define OS_wait_semaphore(token, semaphoreWaitList) _svc_2(token, semaphoreWaitList, OS_SVC_WAIT_SEMAPHORE)
 
 /*========================*/
 /*      INTERNAL API      */
