@@ -1,8 +1,7 @@
 #ifndef __scheduler_h__
 #define __scheduler_h__
 
-#define MAX_PRIORITY_LEVELS 5
-
+#include "OS/config.h"
 #include <stdint.h>
 
 /*========================*/
@@ -27,6 +26,9 @@ typedef struct s_OS_TCB_t {
 	uint32_t priority;
 } OS_TCB_t;
 
+typedef struct {
+	OS_TCB_t * volatile head;
+} _OS_tasklist_t;
 
 /******************************************/
 /* Task creation and management functions */
@@ -61,11 +63,7 @@ void OS_addTask(OS_TCB_t * const tcb);
 
 OS_TCB_t const * _OS_schedule(void);
 
-typedef struct {
-	OS_TCB_t * volatile head;
-} _OS_tasklist_t;
-
-extern _OS_tasklist_t task_queues[MAX_PRIORITY_LEVELS];
+extern _OS_tasklist_t task_queues[MAX_TASK_PRIORITY_LEVELS];
 extern _OS_tasklist_t sleep_list;
 extern _OS_tasklist_t pending_list;
 
@@ -73,6 +71,7 @@ void list_push_sl(_OS_tasklist_t *list, OS_TCB_t *task);
 OS_TCB_t* list_pop_sl(_OS_tasklist_t *list);
 void list_remove(_OS_tasklist_t *list, OS_TCB_t *task);
 void list_add(_OS_tasklist_t *list, OS_TCB_t *task);
+OS_TCB_t* list_pop_tail_sl(_OS_tasklist_t *list);
 
 /* SVC delegates */
 void _OS_taskExit_delegate(void);

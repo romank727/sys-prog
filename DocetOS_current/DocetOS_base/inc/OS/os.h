@@ -19,7 +19,7 @@ enum OS_SVC_e {
 	OS_SVC_EXIT,
 	OS_SVC_YIELD,
 	OS_SVC_SCHEDULE,
-	OS_SVC_WAIT,
+	OS_SVC_WAIT_MUTEX,
 	OS_SVC_SLEEP,
 	OS_SVC_WAIT_SEMAPHORE,
 };
@@ -60,7 +60,7 @@ uint32_t OS_elapsedTicks(void);
 
 #define OS_sleep(sleepNum) _svc_1(sleepNum, OS_SVC_SLEEP)
 
-#define OS_wait(notifCounter, mutexWaitList) _svc_2(notifCounter, mutexWaitList, OS_SVC_WAIT)
+#define OS_wait_mutex(notifCounter, mutexWaitList) _svc_2(notifCounter, mutexWaitList, OS_SVC_WAIT_MUTEX)
 
 #define OS_wait_semaphore(token, semaphoreWaitList) _svc_2(token, semaphoreWaitList, OS_SVC_WAIT_SEMAPHORE)
 
@@ -156,7 +156,6 @@ extern OS_TCB_t const * const _OS_idleTCB_p;
 
 #define ASSERT(x) do{if(!(x))__BKPT(0);}while(0)
 
-
 /* Globals */
 extern OS_TCB_t * volatile _currentTCB;
 
@@ -177,7 +176,9 @@ void SysTick_Handler(void);
 void _OS_yield_delegate(void);
 void _OS_schedule_delegate(void);
 void _OS_enable_systick_delegate(void);
-void _OS_wait_delegate(_OS_SVC_StackFrame_t *svcStack);
+void _OS_wait_mutex_delegate(_OS_SVC_StackFrame_t *svcStack);
+void _OS_wait_semph_delegate(_OS_SVC_StackFrame_t *svcStack);
+void _OS_sleep_delegate(_OS_SVC_StackFrame_t *svcStack);
 
 #endif /* OS_INTERNAL */
 

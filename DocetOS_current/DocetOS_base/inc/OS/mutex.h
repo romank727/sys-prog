@@ -1,8 +1,6 @@
 #ifndef MUTEX_H
 #define MUTEX_H
 
-#define OS_INTERNAL
-
 #include "OS/os.h"
 #include "stm32f4xx.h"
 

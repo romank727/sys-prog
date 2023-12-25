@@ -1,8 +1,6 @@
 #ifndef SEMAPHORE_H
 #define SEMAPHORE_H
 
-#define OS_INTERNAL
-
 #include "OS/os.h"
 #include "stm32f4xx.h"
 
@@ -15,6 +13,5 @@ typedef struct s_OS_semaphore_t {
 
 void OS_semaphore_acquire(OS_semaphore_t * semaphore);
 void OS_semaphore_release(OS_semaphore_t * semaphore);
-void _OS_wait_semph_delegate(_OS_SVC_StackFrame_t *svcStack);
 
 #endif /* SEMAPHORE_H */

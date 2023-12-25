@@ -183,7 +183,7 @@
             <hadIRAM>1</hadIRAM>
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
-            <RvdsVP>2</RvdsVP>
+            <RvdsVP>1</RvdsVP>
             <RvdsMve>0</RvdsMve>
             <RvdsCdeCp>0</RvdsCdeCp>
             <nBranchProt>0</nBranchProt>
@@ -410,14 +410,14 @@
               <FilePath>.\src\OS\os_asm.s</FilePath>
             </File>
             <File>
-              <FileName>sleep.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\OS\sleep.c</FilePath>
-            </File>
-            <File>
               <FileName>sleep.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\inc\OS\sleep.h</FilePath>
+            </File>
+            <File>
+              <FileName>sleep.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\OS\sleep.c</FilePath>
             </File>
             <File>
               <FileName>mutex.h</FileName>
@@ -438,6 +438,21 @@
               <FileName>semaphore.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\OS\semaphore.c</FilePath>
+            </File>
+            <File>
+              <FileName>mempool.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\inc\OS\mempool.h</FilePath>
+            </File>
+            <File>
+              <FileName>mempool.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\OS\mempool.c</FilePath>
+            </File>
+            <File>
+              <FileName>config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\inc\OS\config.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -516,5 +531,14 @@
       </file>
     </files>
   </RTE>
+
+  <LayerInfo>
+    <Layers>
+      <Layer>
+        <LayName>DocetOS</LayName>
+        <LayPrjMark>1</LayPrjMark>
+      </Layer>
+    </Layers>
+  </LayerInfo>
 
 </Project>

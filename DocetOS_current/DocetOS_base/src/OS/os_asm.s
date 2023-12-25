@@ -15,8 +15,8 @@
     IMPORT _OS_taskExit_delegate
     IMPORT _OS_yield_delegate
     IMPORT _OS_schedule_delegate
-	IMPORT _OS_wait_delegate
-	IMPORT OS_sleep_delegate
+	IMPORT _OS_wait_mutex_delegate
+	IMPORT _OS_sleep_delegate
 	IMPORT _OS_wait_semph_delegate
     
 SVC_Handler
@@ -41,8 +41,8 @@ SVC_tableStart
     DCD _OS_taskExit_delegate
     DCD _OS_yield_delegate
     DCD _OS_schedule_delegate
-	DCD _OS_wait_delegate
-	DCD OS_sleep_delegate
+	DCD _OS_wait_mutex_delegate
+	DCD _OS_sleep_delegate
 	DCD _OS_wait_semph_delegate
 SVC_tableEnd
 

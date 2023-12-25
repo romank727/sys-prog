@@ -1,4 +1,4 @@
---cpu=Cortex-M4.fp.sp
+--cpu=Cortex-M4 --fpu=SoftVFP
 ".\objects\main.o"
 ".\objects\scheduler.o"
 ".\objects\os.o"
@@ -6,6 +6,7 @@
 ".\objects\sleep.o"
 ".\objects\mutex.o"
 ".\objects\semaphore.o"
+".\objects\mempool.o"
 ".\objects\hardfault.o"
 ".\objects\utils.o"
 ".\objects\retarget_io.o"

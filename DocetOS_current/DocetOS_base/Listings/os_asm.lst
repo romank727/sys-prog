@@ -21,8 +21,8 @@ ARM Macro Assembler    Page 1
    15 00000000                 IMPORT           _OS_taskExit_delegate
    16 00000000                 IMPORT           _OS_yield_delegate
    17 00000000                 IMPORT           _OS_schedule_delegate
-   18 00000000                 IMPORT           _OS_wait_delegate
-   19 00000000                 IMPORT           OS_sleep_delegate
+   18 00000000                 IMPORT           _OS_wait_mutex_delegate
+   19 00000000                 IMPORT           _OS_sleep_delegate
    20 00000000                 IMPORT           _OS_wait_semph_delegate
    21 00000000         
    22 00000000         SVC_Handler
@@ -48,8 +48,8 @@ Start)/4)
    41 00000020 00000000        DCD              _OS_taskExit_delegate
    42 00000024 00000000        DCD              _OS_yield_delegate
    43 00000028 00000000        DCD              _OS_schedule_delegate
-   44 0000002C 00000000        DCD              _OS_wait_delegate
-   45 00000030 00000000        DCD              OS_sleep_delegate
+   44 0000002C 00000000        DCD              _OS_wait_mutex_delegate
+   45 00000030 00000000        DCD              _OS_sleep_delegate
    46 00000034 00000000        DCD              _OS_wait_semph_delegate
    47 00000038         SVC_tableEnd
    48 00000038         
@@ -145,13 +145,13 @@ ARM Macro Assembler    Page 3
   116 0000008C                 END
               00000000 
               00000000 
-Command Line: --debug --xref --diag_suppress=9931,A1950W --cpu=Cortex-M4.fp.sp 
---depend=.\objects\os_asm.d -o.\objects\os_asm.o -I.\RTE\_STM32F407_Flash -IC:\
-Users\Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include -IC:\Use
-rs\Roman\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSIS\Device
-\ST\STM32F4xx\Include --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSIO
-N SETA 538" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --prede
-fine="_RTE_ SETA 1" --list=.\listings\os_asm.lst src\OS\os_asm.s
+Command Line: --debug --xref --diag_suppress=9931,A1950W --cpu=Cortex-M4 --fpu=
+SoftVFP --depend=.\objects\os_asm.d -o.\objects\os_asm.o -I.\RTE\_STM32F407_Fla
+sh -IC:\Users\Roman\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include 
+-IC:\Users\Roman\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.17.1\Drivers\CMSI
+S\Device\ST\STM32F4xx\Include --predefine="__EVAL SETA 1" --predefine="__UVISIO
+N_VERSION SETA 538" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1"
+ --predefine="_RTE_ SETA 1" --list=.\listings\os_asm.lst src\OS\os_asm.s
 
 
 
@@ -236,14 +236,6 @@ Comment: _task_switch used once
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 External symbols
 
-OS_sleep_delegate 00000000
-
-Symbol: OS_sleep_delegate
-   Definitions
-      At line 19 in file src\OS\os_asm.s
-   Uses
-      At line 45 in file src\OS\os_asm.s
-Comment: OS_sleep_delegate used once
 _OS_enable_systick_delegate 00000000
 
 Symbol: _OS_enable_systick_delegate
@@ -268,6 +260,14 @@ Symbol: _OS_schedule_delegate
    Uses
       At line 43 in file src\OS\os_asm.s
 Comment: _OS_schedule_delegate used once
+_OS_sleep_delegate 00000000
+
+Symbol: _OS_sleep_delegate
+   Definitions
+      At line 19 in file src\OS\os_asm.s
+   Uses
+      At line 45 in file src\OS\os_asm.s
+Comment: _OS_sleep_delegate used once
 _OS_taskExit_delegate 00000000
 
 Symbol: _OS_taskExit_delegate
@@ -276,14 +276,14 @@ Symbol: _OS_taskExit_delegate
    Uses
       At line 41 in file src\OS\os_asm.s
 Comment: _OS_taskExit_delegate used once
-_OS_wait_delegate 00000000
+_OS_wait_mutex_delegate 00000000
 
-Symbol: _OS_wait_delegate
+Symbol: _OS_wait_mutex_delegate
    Definitions
       At line 18 in file src\OS\os_asm.s
    Uses
       At line 44 in file src\OS\os_asm.s
-Comment: _OS_wait_delegate used once
+Comment: _OS_wait_mutex_delegate used once
 _OS_wait_semph_delegate 00000000
 
 Symbol: _OS_wait_semph_delegate
@@ -316,4 +316,4 @@ Symbol: _currentTCB
       At line 89 in file src\OS\os_asm.s
 
 9 symbols
-354 symbols in table
+353 symbols in table

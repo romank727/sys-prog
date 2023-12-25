@@ -1,8 +1,6 @@
 #ifndef SLEEP_H
 #define SLEEP_H
 
-#define OS_INTERNAL
-
 #include "stm32f4xx.h"
 
 extern uint32_t OS_elapsedTicks(void);

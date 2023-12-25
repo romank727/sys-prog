@@ -1,7 +1,8 @@
+#define OS_INTERNAL
+
 #include "OS/mutex.h"
 
 static uint32_t notificationCounter = 0;
-OS_TCB_t* list_pop_tail_sl(_OS_tasklist_t *list);
 
 void OS_mutex_acquire (OS_mutex_t * mutex) {
 	OS_TCB_t *currentTCB = OS_currentTCB();
@@ -24,7 +25,7 @@ void OS_mutex_acquire (OS_mutex_t * mutex) {
 		}
 		else {
 			// Call OS_wait() since the mutex is currently held by another task.
-			OS_wait(notificationCounter, (uint32_t)&(mutex->waitingList));
+			OS_wait_mutex(notificationCounter, (uint32_t)&(mutex->waitingList));
 		}
 	}
 	// Increment the mutex's counter after acquiring it.
@@ -45,13 +46,13 @@ void OS_mutex_release (OS_mutex_t * mutex) {
 	OS_yield();
 }
 
-void _OS_wait_delegate(_OS_SVC_StackFrame_t *svcStack) {
+void _OS_wait_mutex_delegate(_OS_SVC_StackFrame_t *svcStack) {
 	_OS_tasklist_t *waitingList = (_OS_tasklist_t *)(svcStack->r1);
 
 	if (svcStack->r0 == notificationCounter) {
 		OS_TCB_t * currentTask = OS_currentTCB();
 		// Check if the task's priority is within the valid range
-		if (currentTask->priority < MAX_PRIORITY_LEVELS) {
+		if (currentTask->priority < MAX_TASK_PRIORITY_LEVELS) {
 			// Remove the current task from its priority queue
 			list_remove(&task_queues[currentTask->priority], currentTask);
 		}
@@ -67,50 +68,4 @@ void OS_notify(OS_mutex_t *mutex) {
 	if (task) {
 		list_push_sl(&pending_list, task);
 	}
-}
-
-/*
-	1. Atomically load the current head
-	2. If list is empty, return null
-	3. If the list contains only one item, atomically set the head to null.
-		 Return the only item (head and tail of the list)
-	4. Find tail->prev. If the list has more than one item, find node before tail.
-		 Doing it this way because it's hard to find tail in a singly linked list.
-	5. Making sure that we're updating the list atomically. do...while will only do this
-		 if the exclusive flag is set.
-	6. After do...while, remove the tail and set a new tail in the list.
-	7. Pop and return the correct tail as needed.
-*/
-OS_TCB_t* list_pop_tail_sl(_OS_tasklist_t *list) {
-	OS_TCB_t *oldHead = 0;
-	OS_TCB_t *current = 0;
-	do {
-		// atomically load the current head of the list
-		oldHead = (OS_TCB_t *) __LDREXW ((uint32_t volatile *)&(list->head));
-		// if the list is empty, return null
-		if (!oldHead) {
-			return 0;
-		}
-		// if there's only one item in the list
-		if (!oldHead->next) {
-			// attempt to atomically set the list head to null
-			if (__STREXW((uint32_t)0, (uint32_t volatile *)&(list->head)) == 0) {
-				return oldHead; // successfully removed the only item
-			}
-			continue; // exclusive access was lost, retry
-		}
-		// find the second-to-last item in the list
-		current = oldHead;
-		while (current->next && current->next->next) {
-			current = current->next;
-		}
-		// the above loop exits with 'current' being the second-to-last node
-	}
-	while (__STREXW((uint32_t)oldHead, (uint32_t volatile *)&(list->head)));
-	// 'current' is now the second-to-last node, and 'tail' is the last node
-	OS_TCB_t *tail = current->next;
-	// remove the last node from the list
-	current->next = 0;
-	// return the removed tail node
-	return tail;
 }
