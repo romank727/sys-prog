@@ -36,12 +36,12 @@ __attribute__((noreturn))
 static void task3(void const *const args) {
 	(void) args;
 	while (1) {
-		//OS_sleep(50);
-		//OS_mutex_acquire(&mutex);
-		OS_semaphore_acquire(&semaphore);
+		OS_sleep(25);
+		OS_mutex_acquire(&mutex);
+		//OS_semaphore_acquire(&semaphore);
 		printf("CCCCCCCC\r\n");
-		OS_semaphore_release(&semaphore);
-		//OS_mutex_release(&mutex);
+		//OS_semaphore_release(&semaphore);
+		OS_mutex_release(&mutex);
 	}
 }
 
@@ -124,7 +124,7 @@ int main(void) {
 	
 	OS_initialiseTCB(&TCB1, stack1+128, task1, NULL, 2);
 	OS_initialiseTCB(&TCB2, stack2+128, task2, NULL, 2);
-	OS_initialiseTCB(&TCB3, stack3+128, task3, NULL, 2);
+	OS_initialiseTCB(&TCB3, stack3+128, task3, NULL, 3);
 	OS_initialiseTCB(&TCB4, stack4+128, task4, NULL, 2);
 	OS_initialiseTCB(&TCB5, stack5+128, task5, NULL, 2);
 	OS_initialiseTCB(&TCB6, stack6+128, task6, NULL, 2);
@@ -133,11 +133,11 @@ int main(void) {
 	
 	/* Add the tasks to the scheduler */
 	
-	//OS_addTask(&TCB1);
-	//OS_addTask(&TCB2);
+	OS_addTask(&TCB1);
+	OS_addTask(&TCB2);
 	OS_addTask(&TCB3);
-	OS_addTask(&TCB4);
-	OS_addTask(&TCB5);
+	//OS_addTask(&TCB4);
+	//OS_addTask(&TCB5);
 	//OS_addTask(&TCB6);
 	
 	/* Start the OS */

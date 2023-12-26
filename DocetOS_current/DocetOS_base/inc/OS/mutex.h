@@ -9,7 +9,7 @@ typedef struct s_OS_mutex_t {
   // volatile to ensure proper behavior in a multi-threaded environment.
 	OS_TCB_t * volatile taskBlock;
 	uint32_t counter;
-	_OS_tasklist_t waitingList;
+	OS_tasklist_t waitingList;
 } OS_mutex_t;
 
 #define OS_MUTEX_STATIC_INITIALISER {.taskBlock = 0, .counter = 0, .waitingList = {.head = 0}}

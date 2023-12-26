@@ -5,6 +5,6 @@
 
 extern uint32_t OS_elapsedTicks(void);
 
-void sort_sleep_list(void * taskToInsert);
+void i_sort_sleep_list(void * taskToInsert);
 
 #endif /* SLEEP_H */

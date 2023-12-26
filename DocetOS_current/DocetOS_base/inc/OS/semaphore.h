@@ -5,8 +5,8 @@
 #include "stm32f4xx.h"
 
 typedef struct s_OS_semaphore_t {
-	volatile uint32_t token; // 0 if available, 1 if taken
-	_OS_tasklist_t waitingList;
+	uint32_t volatile token; // 0 if available, 1 if taken
+	OS_tasklist_t waitingList;
 } OS_semaphore_t;
 
 #define OS_SEMAPHORE_STATIC_INITIALISER {.token = 0, .waitingList = {.head = 0}}

@@ -28,7 +28,7 @@ typedef struct s_OS_TCB_t {
 
 typedef struct {
 	OS_TCB_t * volatile head;
-} _OS_tasklist_t;
+} OS_tasklist_t;
 
 /******************************************/
 /* Task creation and management functions */
@@ -38,13 +38,13 @@ typedef struct {
    with a frame such that when this TCB is first used in a context switch, the given function will be
    executed.  If and when the function exits, a SVC call will be issued to kill the task, and a callback
    will be executed.
-   The first argument is a pointer to a TCB structure to initialise.
-   The second argument is a pointer to the TOP OF a region of memory to be used as a stack (stacks are full descending).
+   - The first argument is a pointer to a TCB structure to initialise.
+   - The second argument is a pointer to the TOP OF a region of memory to be used as a stack (stacks are full descending).
      Note that the stack MUST be 8-byte aligned.  This means if (for example) malloc() is used to create a stack,
      the result must be checked for alignment, and then the stack size must be added to the pointer for passing
      to this function.
-   The third argument is a pointer to the function that the task should execute.
-   The fourth argument is a void pointer to data that the task should receive. */
+   - The third argument is a pointer to the function that the task should execute.
+   - The fourth argument is a void pointer to data that the task should receive. */
 void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func)(void const * const), void const * const data, uint32_t priority);
 
 /*
@@ -63,15 +63,20 @@ void OS_addTask(OS_TCB_t * const tcb);
 
 OS_TCB_t const * _OS_schedule(void);
 
-extern _OS_tasklist_t task_queues[MAX_TASK_PRIORITY_LEVELS];
-extern _OS_tasklist_t sleep_list;
-extern _OS_tasklist_t pending_list;
+/*	Extern declarations for task list variables used in the scheduler */
 
-void list_push_sl(_OS_tasklist_t *list, OS_TCB_t *task);
-OS_TCB_t* list_pop_sl(_OS_tasklist_t *list);
-void list_remove(_OS_tasklist_t *list, OS_TCB_t *task);
-void list_add(_OS_tasklist_t *list, OS_TCB_t *task);
-OS_TCB_t* list_pop_tail_sl(_OS_tasklist_t *list);
+//	Task queues for each priority level, holding tasks ready to run
+extern OS_tasklist_t task_queues[MAX_TASK_PRIORITY_LEVELS];
+//	List for tasks transitioning between states or queues
+extern OS_tasklist_t pending_list;
+//	List of tasks currently asleep
+extern OS_tasklist_t sleep_list;
+
+void list_add(OS_tasklist_t *list, OS_TCB_t *task);
+void list_remove(OS_tasklist_t *list, OS_TCB_t *task);
+void list_push_sl(OS_tasklist_t *list, OS_TCB_t *task);
+OS_TCB_t* list_pop_sl(OS_tasklist_t *list);
+OS_TCB_t* list_pop_tail_sl(OS_tasklist_t *list);
 
 /* SVC delegates */
 void _OS_taskExit_delegate(void);

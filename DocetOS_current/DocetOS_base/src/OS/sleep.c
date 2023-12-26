@@ -4,7 +4,7 @@
 #include "OS/os.h"
 
 // Function to perform correct insertion sort into "sleeping list".
-void sort_sleep_list(void *taskToInsert) {
+void i_sort_sleep_list(void *taskToInsert) {
 	OS_TCB_t * insertTask = (OS_TCB_t *) taskToInsert;
 	// extract the wake-up time from the task's data field.
 	uint32_t taskWakeUpTime = insertTask->data;
@@ -47,7 +47,7 @@ void _OS_sleep_delegate(_OS_SVC_StackFrame_t *svcStack) {
 	}
 	
 	// put the task into the sleep list while also keeping it sorted on insertion
-	sort_sleep_list(currentTask);
+	i_sort_sleep_list(currentTask);
 	
 	// setting the PendSV bit to trigger a context switch
 	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;

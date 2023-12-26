@@ -47,7 +47,7 @@ void OS_mutex_release (OS_mutex_t * mutex) {
 }
 
 void _OS_wait_mutex_delegate(_OS_SVC_StackFrame_t *svcStack) {
-	_OS_tasklist_t *waitingList = (_OS_tasklist_t *)(svcStack->r1);
+	OS_tasklist_t *waitingList = (OS_tasklist_t *)(svcStack->r1);
 
 	if (svcStack->r0 == notificationCounter) {
 		OS_TCB_t * currentTask = OS_currentTCB();

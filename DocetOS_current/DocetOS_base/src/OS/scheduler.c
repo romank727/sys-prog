@@ -3,23 +3,41 @@
 #include "OS/os.h"
 #include "stm32f4xx.h"
 
-/* This is an implementation of an extremely simple round-robin scheduler.
+/*	Array of priority level task queues. 
+		These queues hold TCBs that are ready to be executed,
+		organised by their assigned priority.
+		The highest priority level corresponds to a larger integer.
+		e.g. '5' is of higher priority than '1'. */
+OS_tasklist_t task_queues[MAX_TASK_PRIORITY_LEVELS];
+/*	Temporary storage list for TCBs that are ready
+		to be moved to their respective priority queues.
+		Primarily used to hold TCBs that are transitioning
+		from sleeping/waiting to ready-to-run. */
+OS_tasklist_t pending_list = {.head = 0};
+/*	Holds TCBs currently asleep. 
+		Sleeping occurs for a specified amount of ticks,
+		defined by the user.
+		TCBs are relocated to 'pending_list' after sleeping. */
+OS_tasklist_t sleep_list = {.head = 0};
 
-   A task list structure is declared.  Tasks are added to the list to create a circular buffer.
-	 When tasks finish, they are removed from the list.  When the scheduler is invoked, it simply
-	 advances the head pointer, and returns it.  If the head pointer is null, a pointer to the
-	 idle task is returned instead.
-	 
-	 The scheduler is reasonably efficient but not very flexible.  The "yield" flag is not
-	 checked, but merely cleared before a task is returned, so OS_yield() is equivalent to
-	 OS_schedule() in this implementation.
+/**
+*	Adds a TCB to a specified doubly linked list.
+*	The list is circular doubly linked, where each node
+*	has a 'next' and 'prev' pointer.
+*
+* @param	list	Pointer to a list to which the task is added.
+*								This should be a pointer to an initialised 'OS_tasklist_t' type.
+*	@param	task	Pointer to TCB which will be added to the list.
+*								This should be initialised and not be NULL.
+*
+*	1.	If the list is currently empty, the inserted TCB becomes the sole
+*			element in the list. It's also set to point to itself, forming a circular
+*			list with a single node. Setting the 'next' and 'prev' pointers as appropriate.
+*	2.	If the list is already populated, the new task is inserted at the beginning
+*			of the list. 'next' pointer is set to current head of the list and 'prev'
+*			is set to last element of the list. The new task also becomes the head of the list.
 */
-
-_OS_tasklist_t task_queues[MAX_TASK_PRIORITY_LEVELS];
-_OS_tasklist_t pending_list = {.head = 0};
-_OS_tasklist_t sleep_list = {.head = 0};
-
-void list_add(_OS_tasklist_t *list, OS_TCB_t *task) {
+void list_add(OS_tasklist_t *list, OS_TCB_t *task) {
 	if (!(list->head)) {
 		task->next = task;
 		task->prev = task;
@@ -32,7 +50,27 @@ void list_add(_OS_tasklist_t *list, OS_TCB_t *task) {
 	}
 }
 
-void list_remove(_OS_tasklist_t *list, OS_TCB_t *task) {
+/**
+*	Removes a TCB from a doubly linked list.
+*	This function extracts a specified TCB from a given list.
+*	The list is expected to be circular doubly linked.
+*
+*	@param	list	Pointer to the list from which the task is removed.
+*								The list must be valid and initialised.
+*	@param	task	Pointer to the TCB to be removed from the list.
+*								The task must be part of the list and not NULL.
+*
+*	1.	If the task is the only element in the list, it sets the list's
+*			head pointer to NULL, effectively emptying the list.
+*	2.	If the task is the head of the list, updates the head pointer to
+*			the next task in the list.
+*	3.	The function adjusts the 'next' and 'prev' pointers of the adjacent tasks
+*			in order to remove the TCB from the list. 
+*
+*	Note:	The function does not free the memory associated to the TCB, it simply
+*				removes it from the list.
+*/
+void list_remove(OS_tasklist_t *list, OS_TCB_t *task) {
 	if (task->next == task) {
 		list->head = 0;
 		return;
@@ -44,114 +82,170 @@ void list_remove(_OS_tasklist_t *list, OS_TCB_t *task) {
 	task->next->prev = task->prev;
 }
 
-// Push an item into a singly-linked list.
-void list_push_sl(_OS_tasklist_t *list, OS_TCB_t *task) {
-	// Loop until the task is added to the list
+/**
+*	Atomically pushes a TCB to the head of a singly linked list.
+*	It tries to do so in a thread safe manner, using atomic instructions
+*	to ensure the list remains consistent in a multi-threaded environment
+*	where multiple tasks may try modifying the list concurrently.
+*
+*	@param	list	Pointer to the singly linked list where task will be added.
+*								The list must be valid and initialised.
+*	@param	task	Pointer to the TCB which will be added to the list.
+*								The task must not be NULL.
+*
+*	1.	Enters a do...while loop which will continue until the task is
+*			successfully added to the list.
+*	2.	Inside the loop, it uses the LDREX to load the current
+*			head of the list. LDREX will also set the exclusive flag, which is crucial
+*			and will be checked later by the STREX.
+*	3.	Sets the 'next' pointer of the new task to the current head of the list.
+*	4.	STREX attempts to store the new task as the new head of list atomically.
+*			If the exclusive flag set by LDREX is still valid, STREX will succeed (returns 0)
+*			and the loop will exit.
+*			Otherwise, the exclusive flag is invalid, meaning another task modified the list,
+*			STREX fails (returns 1) and the loop repeats itself until success.
+*/
+void list_push_sl(OS_tasklist_t *list, OS_TCB_t *task) {
 	do {
-		// atomically load the current head of list and mark the memory address for exclusive access
-		// also return the value at that address
 		OS_TCB_t *head = (OS_TCB_t *) __LDREXW ((uint32_t volatile *)&(list->head));
-		// set the "next" pointer of new task to current head of the list
-		// the task will be inserted at the beginning of the list
 		task->next = head;
 	}
-	// attempts to store the new task as the new head of the list atomically
-  // __STREXW will complete the operation only if the exclusive access mark is still valid.
-  // If exclusive access is still valid (returns 0).
-  // If access is lost (returns 1), goes back to the start of the "do" statement.
 	while (__STREXW ((uint32_t) task, (uint32_t volatile *)&(list->head)));
 }
 
-OS_TCB_t* list_pop_sl(_OS_tasklist_t *list) {
-	// track the head
+/**
+*	Atomically pops the head of a singly linked list.
+*	Removes and returns the first (head) TCB from the list in a thread safe manner,
+*	ensuring consistent behaviour even when multiple tasks try to modify the list
+*	concurrently.
+*
+*	@param	list	Pointer to singly linked list from which the TCB will be removed.
+*								The list must be valid and initialised.
+*	@return				Pointer to the popped TCB if the list isn't empty, otherwise NULL.
+*
+*	1.	Enters a do...while which will continue until the task is removed from the list.
+*	2.	Inside the loop, it uses LDREX to atomically load the current head of the list
+*			and set it as 'oldHead'. Does this as well as setting the exclusive flag.
+*	3.	If 'oldHead' is NULL (the list is empty), it clears the exclusive flag using CLREX.
+*			Returns NULL.
+*	4.	If 'oldHead' isn't NULL, function uses STREX to atomically update the head of the list
+*			to the next element. If exclusive flag is valid, STREX will succeed and the loop will exit.
+*			Otherwise, STREX will fail and the loop will repeat itself. 
+*	5.	Once the loop exits, 'oldHead' is returned, meaning the task is popped from the list.
+*/
+OS_TCB_t* list_pop_sl(OS_tasklist_t *list) {
 	OS_TCB_t * oldHead = 0;
 	do {
-		// atomically load the current head and set it as oldHead
 		oldHead = (OS_TCB_t *) __LDREXW ((uint32_t volatile *)&(list->head));
 		if (!oldHead) {
-			// clear the exclusive access flag, so the STREXW works correctly later on
 			__CLREX();
 			return 0;
 		}
 	}
-	// attempt to update the head of list atomically.
 	while (__STREXW ((uint32_t) oldHead->next, (uint32_t volatile *)&(list->head)));
 	return oldHead;
 }
 
-/*
-	1. Atomically load the current head
-	2. If list is empty, return null
-	3. If the list contains only one item, atomically set the head to null.
-		 Return the only item (head and tail of the list)
-	4. Find tail->prev. If the list has more than one item, find node before tail.
-		 Doing it this way because it's hard to find tail in a singly linked list.
-	5. Making sure that we're updating the list atomically. do...while will only do this
-		 if the exclusive flag is set.
-	6. After do...while, remove the tail and set a new tail in the list.
-	7. Pop and return the correct tail as needed.
+/**
+*	Atomically pops the tail of a singly linked list.
+*	Removes and returns the last TCB from the list in a thread safe manner. Uses atomic
+*	operations to ensure safety in a multi threaded environment.
+*
+*	@param	list	Pointer to the singly linked list from which the TCB will be removed.
+*								The list must be valid and initialised.
+*	@return				Pointer to the popped tail TCB if the list isn't empty. Otherwise NULL.
+*
+*	1.	Enters a loop trying to atomically find and remove the tail of the list.
+*	2.	Inside the loop, uses LDREX to atomically load the current head of list, as well
+*			as setting the exclusive flag.
+*	3.	If the list is NULL (empty), function exits and returns NULL.
+*	4.	If there is only one element in the list, attempts to atomically set the head of
+*			the list to NULL using STREX. If successful, returns the single item.
+*			Otherwise, STREX fails and retries the operation.
+*	5.	If the list contains more than one element, finds the second to last element (current) in
+*			the list, since a tail cannot be easily found in a single linked list.
+*	6.	Removes the tail from the list (current->next) by setting it to NULL.
+*	7.	The tail node is returned.
 */
-OS_TCB_t* list_pop_tail_sl(_OS_tasklist_t *list) {
+OS_TCB_t* list_pop_tail_sl(OS_tasklist_t *list) {
 	OS_TCB_t *oldHead = 0;
 	OS_TCB_t *current = 0;
 	do {
-		// atomically load the current head of the list
 		oldHead = (OS_TCB_t *) __LDREXW ((uint32_t volatile *)&(list->head));
-		// if the list is empty, return null
 		if (!oldHead) {
 			return 0;
 		}
-		// if there's only one item in the list
 		if (!oldHead->next) {
-			// attempt to atomically set the list head to null
 			if (__STREXW((uint32_t)0, (uint32_t volatile *)&(list->head)) == 0) {
-				return oldHead; // successfully removed the only item
+				return oldHead;
 			}
 			__CLREX();
-			continue; // exclusive access was lost, retry
+			continue;
 		}
-		// find the second-to-last item in the list
 		current = oldHead;
 		while (current->next && current->next->next) {
 			current = current->next;
 		}
-		// the above loop exits with 'current' being the second-to-last node
 	}
 	while (__STREXW((uint32_t)oldHead, (uint32_t volatile *)&(list->head)));
-	// 'current' is now the second-to-last node, and 'tail' is the last node
 	OS_TCB_t *tail = current->next;
-	// remove the last node from the list
 	current->next = 0;
-	// return the removed tail node
 	return tail;
 }
 
-/* Round-robin scheduler */
+/**
+*	Fixed Priority & Round Robin scheduler.
+*	Main driver of the OS. Selects the next task to run based on a fixed-priority,
+*	as well as incorporating round-robin within each priority level. It also processes
+* tasks in the sleep and pending lists, moving them back to the scheduler when they are
+* ready to run.
+*
+*	@return		Pointer to the next TCB to run.
+*
+*	1.	Processes the sleep list:
+*			-	Wakes up TCBs whose sleep time has expired
+*			-	Moves awakened tasks to the pending list for further processing
+*
+*	2.	Processes the pending list:
+*			-	Moves tasks from pending list back to their respective priority queue.
+*			-	Ensures tasks are now considered for scheduling again, if possible.
+*
+*	3.	Implements fixed priority scheduling with round-robin
+*			-	Iterates through each priority queue, from highest to lowest.
+*			-	For each priority level, if it's not empty, selects the next task after
+*				applying round robin to the queue
+*			-	Ensures fairness among tasks of the same priority level
+*			-	Returns the next task to run
+*
+*	4.	In case no runnable tasks are found in any of the queues, returns the idle task.
+*			-	The idle task is a special task, which runs indefinitely only when no other tasks are runnable.
+*			-	This ensures the CPU is not left idle when there are no tasks to execute.
+*/
 OS_TCB_t const * _OS_schedule(void) {
+	// Wake up tasks in the sleep list if wake up time has elapsed
 	while (sleep_list.head && (sleep_list.head->data <= OS_elapsedTicks())) {
 		OS_TCB_t *taskToWake = list_pop_sl(&sleep_list);
 		taskToWake->state &= ~TASK_STATE_SLEEP;
 		list_push_sl(&pending_list, taskToWake);
 	}
 	
-	// Process pending list
+	// Move tasks from pending list to correct priority queue
 	while (pending_list.head) {
 		OS_TCB_t *taskToProcess = list_pop_sl(&pending_list);
 		list_add(&task_queues[taskToProcess->priority], taskToProcess);
 	}
 	
 	// Iterate through all priority levels, starting from the highest
-	for (int prio = MAX_TASK_PRIORITY_LEVELS - 1; prio >= 0; prio--) {
+	for (int8_t prio = MAX_TASK_PRIORITY_LEVELS - 1; prio >= 0; prio--) {
 		// Implement round-robin within this priority level
 		if (task_queues[prio].head) {
-			// Move the head to the next task in the queue
+			// Round-robin within the priority level
 			task_queues[prio].head = task_queues[prio].head->next;
-			// Clear the yield flag and return the task
 			task_queues[prio].head->state &= ~TASK_STATE_YIELD;
 			return task_queues[prio].head;
 		}
 	}
-	// If no runnable tasks are found in any priority queue
+	// Return the idle task if no other tasks are runnable
 	return _OS_idleTCB_p;
 }
 

@@ -3,8 +3,8 @@
 
 #include <stddef.h>
 
-#define MAX_TASK_PRIORITY_LEVELS 5
-#define NUM_MEMORY_POOLS 3
+#define MAX_TASK_PRIORITY_LEVELS	5
+#define NUM_MEMORY_POOLS	3
 
 typedef struct {
 	size_t block_size;

@@ -29,7 +29,7 @@ void OS_semaphore_release(OS_semaphore_t * semaphore) {
 }
 
 void _OS_wait_semph_delegate(_OS_SVC_StackFrame_t *svcStack) {
-	_OS_tasklist_t *waitingList = (_OS_tasklist_t *)(svcStack->r1);
+	OS_tasklist_t *waitingList = (OS_tasklist_t *)(svcStack->r1);
 	
 	if (svcStack->r0) {
 		OS_TCB_t *currentTask = OS_currentTCB();
