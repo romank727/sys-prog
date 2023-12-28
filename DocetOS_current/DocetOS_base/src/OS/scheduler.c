@@ -35,6 +35,7 @@ OS_tasklist_t sleep_list = {.head = 0};
 *
 * @param	list	Pointer to a list to which the task is added.
 *								This should be a pointer to an initialised 'OS_tasklist_t' type.
+*
 *	@param	task	Pointer to TCB which will be added to the list.
 *								This should be initialised and not be NULL.
 *
@@ -65,6 +66,7 @@ void list_add(OS_tasklist_t *list, OS_TCB_t *task) {
 *
 *	@param	list	Pointer to the list from which the task is removed.
 *								The list must be valid and initialised.
+*
 *	@param	task	Pointer to the TCB to be removed from the list.
 *								The task must be part of the list and not NULL.
 *
@@ -98,6 +100,7 @@ void list_remove(OS_tasklist_t *list, OS_TCB_t *task) {
 *
 *	@param	list	Pointer to the singly linked list where task will be added.
 *								The list must be valid and initialised.
+*
 *	@param	task	Pointer to the TCB which will be added to the list.
 *								The task must not be NULL.
 *
@@ -129,6 +132,7 @@ void list_push_sl(OS_tasklist_t *list, OS_TCB_t *task) {
 *
 *	@param	list	Pointer to singly linked list from which the TCB will be removed.
 *								The list must be valid and initialised.
+*
 *	@return				Pointer to the popped TCB if the list isn't empty, otherwise NULL.
 *
 *	1.	Enters a do...while which will continue until the task is removed from the list.
@@ -161,6 +165,7 @@ OS_TCB_t* list_pop_sl(OS_tasklist_t *list) {
 *
 *	@param	list	Pointer to the singly linked list from which the TCB will be removed.
 *								The list must be valid and initialised.
+*
 *	@return				Pointer to the popped tail TCB if the list isn't empty. Otherwise NULL.
 *
 *	1.	Enters a loop trying to atomically find and remove the tail of the list.
