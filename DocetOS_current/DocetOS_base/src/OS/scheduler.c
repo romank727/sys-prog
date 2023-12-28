@@ -3,21 +3,29 @@
 #include "OS/os.h"
 #include "stm32f4xx.h"
 
-/*	Array of priority level task queues. 
-		These queues hold TCBs that are ready to be executed,
-		organised by their assigned priority.
-		The highest priority level corresponds to a larger integer.
-		e.g. '5' is of higher priority than '1'. */
+/**	
+*	Array of priority level task queues. 
+*	These queues hold TCBs that are ready to be executed,
+*	organised by their assigned priority.
+*	The highest priority level corresponds to a larger integer.
+*	e.g. '5' is of higher priority than '1'. 
+*/
 OS_tasklist_t task_queues[MAX_TASK_PRIORITY_LEVELS];
-/*	Temporary storage list for TCBs that are ready
-		to be moved to their respective priority queues.
-		Primarily used to hold TCBs that are transitioning
-		from sleeping/waiting to ready-to-run. */
+
+/**
+*	Temporary storage list for TCBs that are ready
+*	to be moved to their respective priority queues.
+*	Primarily used to hold TCBs that are transitioning
+*	from sleeping/waiting to ready-to-run. 
+*/
 OS_tasklist_t pending_list = {.head = 0};
-/*	Holds TCBs currently asleep. 
-		Sleeping occurs for a specified amount of ticks,
-		defined by the user.
-		TCBs are relocated to 'pending_list' after sleeping. */
+
+/**	
+*	Holds TCBs currently asleep. 
+*	Sleeping occurs for a specified amount of ticks,
+*	defined by the user.
+*	TCBs are relocated to 'pending_list' after sleeping. 
+*/
 OS_tasklist_t sleep_list = {.head = 0};
 
 /**
@@ -249,7 +257,25 @@ OS_TCB_t const * _OS_schedule(void) {
 	return _OS_idleTCB_p;
 }
 
-/* Initialises a task control block (TCB) and its associated stack.  See os.h for details. */
+/**
+*	Initialises a TCB and its associated stack. The stack is prepared
+* with a frame such that when this TCB is first used in a context switch, the
+*	specified function will be executed. If the function exits, an SVC will be called
+*	to terminate the task and execute a callback.
+*	
+*	@param	TCB				Pointer to the TCB structure to initialise.
+* @param	stack 		Pointer to the top of the region of memory to be used as a stack.
+*										Stacks are full descending, and the stack must be 8-byte aligned.
+* @param	func			Pointer to the function that the task should execute.
+* @param	data			Void pointer to data that the task should receive.
+* @param	priority 	Integer representing the priority of the task.
+*	
+*	The task function's address is placed in the program counter and the address
+*	of _OS_task_end() is placed in the link register. This setup ensures that
+*	_OS_task_end() is automatically called if the task function ever exits. 
+*	The processor status register is also set to enable the Thumb state to avoid
+*	faults upon context switching.
+*/
 void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func)(void const * const), void const * const data, uint32_t priority) {
 	TCB->sp = stack - (sizeof(_OS_StackFrame_t) / sizeof(uint32_t));
 	TCB->state = 0;
@@ -275,26 +301,52 @@ void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func
 		.r12 = 0,
 		.lr = (uint32_t)_OS_task_end,
 		.pc = (uint32_t)(func),
-		.psr = xPSR_T_Msk  /* Sets the thumb bit to avoid a big steaming fault */
+		.psr = xPSR_T_Msk
 	};
 }
 
-/* 'Add task' */
+/**
+*	Schedules a user-defined task by adding it to the appropriate task queu based
+*	on its priority. This function assumes that the priority of the task has already
+*	been set in its TCB. The task will follow round robin in its priority queue.
+*
+*	@param	tcb		Pointer to the TCB of the task to be scheduled.
+*								The TCB must be properly initialised and should have a valid priority.
+*
+*	The function first checks if the task's priority is valid and within the
+*	range defined by MAX_TASK_PRIORITY_LEVELS. If valid, the task is added to its
+*	queue using 'list_add'. 
+*	
+*	Note: The function assumes the TCB passed is correctly initialised, has a valid
+*	priority, stack pointer and an initial stack frame.
+*/
 void OS_addTask(OS_TCB_t * const tcb) {
 	if (tcb->priority < MAX_TASK_PRIORITY_LEVELS) {
 		list_add(&task_queues[tcb->priority], tcb);
 	}
 }
 
-/* SVC handler that's called by _OS_task_end when a task finishes.  Removes the
-   task from the scheduler and then queues PendSV to reschedule. */
+/** 
+*	SVC that is called when a task finishes its execution.
+*	This function is responsible for removing the task from the main scheduler,
+*	as well as triggering a context switch for the next task to be scheduled.
+*	
+*	1.	Removes the finished task's TCB from its priority queue
+*	2.	Sets the PendSV flag to initiate a context switch
+*
+*	Note:	This delegate is usually invoked automatically at the end of a task's
+*				lifecycle, only after the task has finished its execution.
+*/
 void _OS_taskExit_delegate(void) {
-	// Remove the given TCB from the list of tasks so it won't be run again
+	// Retrieve the current task's TCB.
 	OS_TCB_t * tcb = OS_currentTCB();
-	// Check if the task's priority is within the valid range
+	
+	// Ensure the task's priority is within the defined range.
 	if (tcb->priority < MAX_TASK_PRIORITY_LEVELS) {
-		// Remove the task from its priority queue
+		// Remove the task from its priority queue.
 		list_remove(&task_queues[tcb->priority], tcb);
 	}
+	
+	// Set the PendSV flag to trigger a context switch.
 	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
 }
