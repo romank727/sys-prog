@@ -30,7 +30,7 @@
 static uint8_t static_pool[STATIC_ALLOC_POOLSIZE] __attribute__ (( aligned(STATIC_ALLOC_ALIGNMENT) ));
 
 /**	
-*	Initialize the pool index to the size of the pool. 'pool_index' keeps track
+*	Initialise the pool index to the size of the pool. 'pool_index' keeps track
 *	of the current position in the pool for the next allocation. It starts at the
 *	end of the pool and moves backward as memory is allocated. 
 */
@@ -57,12 +57,49 @@ typedef struct {
 	mempool_item_t *head;
 } mempool_t;
 
+/**
+*	Allocates a fixed size block of memory from a static memory pool.
+*	bytes: The size of the block to allocate.
+*/
 void *static_alloc(size_t bytes);
+
+/**
+*	Allocates a block from a specified memory pool.
+*	pool: Pointer to the memory pool from which to allocate.
+*/
 void *pool_allocate(mempool_t *pool);
+
+/**
+*	Deallocates a block back to a specified memory pool.
+*	pool: Pointer to the memory pool to which the block will be deallocated.
+*	block: Pointer to the block being deallocated.
+*/
 void pool_deallocate(mempool_t *pool, void *block);
+
+/**
+*	Initialises a memory pool with a specified block size and number of blocks.
+*	pool: Pointer to the memory pool to initialise.
+*	blocksize: The size of each block in the pool.
+*	blocks: The number of blocks in the pool.
+*/
 void pool_init(mempool_t *pool, size_t blocksize, size_t blocks);
+
+/**
+*	Initialises all configured memory pools as per 'config.h' settings.
+*/
 void mempools_init(void);
+
+/**
+*	Allocates a block from a specific memory pool which is identified by its number.
+*	pool_num: The number (index) of the memory pool to allocate from.
+*/
 void *pool_allocate_from(int32_t pool_num);
+
+/**
+*	Deallocates a block to a specific memory pool, identified by its number.
+*	pool_num: The number of the memory pool to deallocate to.
+*	block: Pointer to the block being deallocated.
+*/
 void pool_deallocate_to(int32_t pool_num, void *block);
 
 #endif /* MEMPOOL_H */

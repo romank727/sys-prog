@@ -2,6 +2,12 @@
 #include "OS/config.h"
 #include "stm32f4xx.h"
 
+/**
+*	Array of memory pool structures, each representing a separate memory pool.
+*	The number of memory pools is defined by 'NUM_MEMORY_POOLS', allowing for multiple
+*	pools with different configurations 
+*	e.g. block sizes and number of blocks.
+*/
 static mempool_t mempools[NUM_MEMORY_POOLS];
 
 /**
@@ -100,21 +106,59 @@ void pool_init(mempool_t *pool, size_t blocksize, size_t blocks) {
 	}
 }
 
+/**
+*	Initialises multiple memory pools based on predefined configurations
+*	set in 'config.h', each with its own block size and number of blocks.
+*
+*	The function iterates through the array of memory pool configurations,
+*	initialising each pool as needed using the 'pool_init' function.
+*	 - 'mempools[i]' is the memory pool to initialise.
+*	 - 'mempool_config[i].block_size' specifies the size of each block in the pool.
+*	 - 'mempool_config[i].num_blocks' specifies the number of blocks in the pool.
+*/
 void mempools_init(void) {
 	for (uint32_t i = 0; i < NUM_MEMORY_POOLS; i++) {
 		pool_init(&mempools[i], mempool_config[i].block_size, mempool_config[i].num_blocks);
 	}
 }
 
+/**
+*	Allocates a block of memory from a specific memory pool.
+*	
+*	@param	pool_num	The index of the memory pool from which to allocate.
+*										Must be within the range of defined memory pools.
+*	
+*	@return						A pointer to the allocated block if operation successful.
+*										Otherwise return NULL, either because of an invalid pool number
+*										or if the chosen pool has no available blocks.
+*	
+*	Note:	This function leaves the actuall allocation to 'pool_allocate'
+*				after validating the pool index.
+*/
 void *pool_allocate_from(int32_t pool_num) {
 	if (pool_num >= 0 && pool_num < NUM_MEMORY_POOLS) {
+		// 'mempools[pool_num]' references the specific memory pool
 		return pool_allocate(&mempools[pool_num]);
 	}
 	return 0;
 }
 
+/**
+*	Deallocates a block of memory back to a specific memory pool.
+*	
+*	@param	pool_num		The index of the memory pool to which the block
+*											will be deallocated.
+*											Has to be within the range of defined memory pools.
+*
+*	@param	block				Pointer to the block of memory to be deallocated
+*
+*	Note:	This function leaves the actual deallocation to 'pool_deallocate'
+*				after validating the pool index.
+*				If the pool number is out of range, the function does nothing.
+*/
 void pool_deallocate_to(int32_t pool_num, void *block) {
 	if (pool_num >= 0 && pool_num < NUM_MEMORY_POOLS) {
+		// 'mempools[pool_num]' references the specific memory pool
 		pool_deallocate(&mempools[pool_num], block);
 	}
 }
