@@ -3,8 +3,13 @@
 
 #include <stddef.h>
 
-
-//	This allows the user to configure the number of distinct priority levels for task scheduling.
+/**
+*	This allows the user to configure the number of distinct priority levels for task scheduling.
+*	The calculations with this priority number is assumed to be zero-indexed.
+*	In other words, if you choose X, the highest available priority will be 'X-1'.
+*	e.g.	X = 5;
+*				highest priority = 4;
+*/
 #define MAX_TASK_PRIORITY_LEVELS	5
 
 //	This enables the user to define the quantity of memory pools they want.

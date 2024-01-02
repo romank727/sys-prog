@@ -8,7 +8,7 @@
 *	These queues hold TCBs that are ready to be executed,
 *	organised by their assigned priority.
 *	The highest priority level corresponds to a larger integer.
-*	e.g. '5' is of higher priority than '1'. 
+*	e.g. '4' is of higher priority than '1'. 
 */
 OS_tasklist_t task_queues[MAX_TASK_PRIORITY_LEVELS];
 
