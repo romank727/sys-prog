@@ -22,37 +22,43 @@ Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
 F:\Coding\Sys. Prog\sys-prog\DocetOS_current\DocetOS_base\DocetOS.uvprojx
-Project File Date:  12/24/2023
+Project File Date:  01/03/2024
 
 <h2>Output:</h2>
 *** Using Compiler 'V6.19', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
 Rebuild target 'STM32F407 Flash'
 assembling os_asm.s...
-src/main.c(155): warning: unused variable 'task1Def' [-Wunused-variable]
-        TaskDef_t task1Def = {
-                  ^
-src/main.c(161): warning: unused variable 'task2Def' [-Wunused-variable]
+src/main.c(177): warning: unused variable 'task2Def' [-Wunused-variable]
         TaskDef_t task2Def = {
                   ^
-src/main.c(185): warning: unused variable 'task6Def' [-Wunused-variable]
+src/main.c(183): warning: unused variable 'task3Def' [-Wunused-variable]
+        TaskDef_t task3Def = {
+                  ^
+src/main.c(189): warning: unused variable 'task4Def' [-Wunused-variable]
+        TaskDef_t task4Def = {
+                  ^
+src/main.c(195): warning: unused variable 'task5Def' [-Wunused-variable]
+        TaskDef_t task5Def = {
+                  ^
+src/main.c(201): warning: unused variable 'task6Def' [-Wunused-variable]
         TaskDef_t task6Def = {
                   ^
-3 warnings generated.
+5 warnings generated.
 compiling main.c...
-compiling os.c...
 compiling sleep.c...
+compiling os.c...
 compiling scheduler.c...
 compiling mutex.c...
 compiling hardfault.c...
-compiling utils.c...
 compiling semaphore.c...
+compiling utils.c...
 compiling mempool.c...
 compiling retarget_io.c...
 assembling startup_stm32f407xx.s...
 compiling system_stm32f4xx.c...
 linking...
-Program Size: Code=14164 RO-data=1284 RW-data=140 ZI-data=18412  
-".\Objects\DocetOS.axf" - 0 Error(s), 3 Warning(s).
+Program Size: Code=14144 RO-data=1284 RW-data=140 ZI-data=18412  
+".\Objects\DocetOS.axf" - 0 Error(s), 5 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -85,22 +91,22 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.6.0
 
    * Component: Keil.ARM Compiler::Compiler:I/O:STDOUT:User:1.2.0
-      Source file:   Template/stdout_user.c
+      Source file:   Template/stdout_USART.c
       Source file:   Source/retarget_io.c
       Source file:   Template/stdout_display.c
-      Source file:   Template/stdout_USART.c
+      Source file:   Template/stdout_user.c
 
    * Component: Keil.ARM Compiler::Compiler:I/O:TTY:User:1.2.0
       Source file:   Source/retarget_io.c
       Source file:   Template/tty_user.c
 
    * Component: Keil::Device:Startup:2.6.3
-      Source file:   MDK/Device/Source/ARM/STM32F40xxx_41xxx_OPT.s
+      Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
       Include file:  Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
+      Source file:   MDK/Device/Source/ARM/STM32F40xxx_41xxx_OPT.s
       Source file:   MDK/Device/Source/ARM/STM32F4xx_OTP.s
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f407xx.s
-      Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:00
 </pre>
 </body>
 </html>

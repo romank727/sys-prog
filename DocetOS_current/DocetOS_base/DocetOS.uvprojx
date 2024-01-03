@@ -454,6 +454,11 @@
               <FileType>5</FileType>
               <FilePath>.\inc\OS\config.h</FilePath>
             </File>
+            <File>
+              <FileName>demo_prototypes.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\inc\OS\demo_prototypes.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

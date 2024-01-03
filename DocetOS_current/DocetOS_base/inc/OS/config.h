@@ -8,11 +8,16 @@
 *	The calculations with this priority number is assumed to be zero-indexed.
 *	In other words, if you choose X, the highest available priority will be 'X-1'.
 *	e.g.	X = 5;
-*				highest priority = 4;
+*				highest priority given to a task = 4;
 */
 #define MAX_TASK_PRIORITY_LEVELS	5
 
-//	This enables the user to define the quantity of memory pools they want.
+/**
+*	This enables the user to define the quantity of memory pools they want.
+*	This value is also assumed to be zero-indexed in further calculations.
+*	e.g.	The first memory pool is pool '0'
+*				The second memory pool is pool '1' etc.
+*/
 #define NUM_MEMORY_POOLS	3
 
 /**

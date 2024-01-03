@@ -1,7 +1,6 @@
 #include "OS/mutex.h"
 #include "OS/semaphore.h"
 #include "OS/mempool.h"
-#include "OS/os.h"
 #include "Utils/utils.h"
 #include <stdio.h>
 #include <inttypes.h>
@@ -9,28 +8,77 @@
 static OS_mutex_t mutex = OS_MUTEX_STATIC_INITIALISER;
 static OS_semaphore_t semaphore = OS_SEMAPHORE_STATIC_INITIALISER;
 
+/*========================*/
+/*     TASK DEFINITION   	*/
+/*			DO NOT TOUCH!			*/
+/*========================*/
+
+/**
+*	TaskFunction_t: A pointer to a function that represents a task
+*									in the system.
+*
+*	This function pointer is designed to point to functios which
+*	conform to a specific format, where the function returns void and accepts
+*	a single pointer argument. 
+*	In other words, this allows for a universal way of defining tasks
+*	throughout the system.
+*/
 typedef void (*TaskFunction_t)(void const * const args);
+
+/**
+*	TaskDef_t: Structure representing the defition of a task.
+*
+*	This struct contains all the essential information that's needed
+*	to create and initialise some task.
+*
+*	@field	taskFunc		Pointer to the function that the task will execute.
+*
+*	@field	priority		The priority level of the task. Tasks with higher
+*											numerical values are of higher priority.
+*
+*	@field	stackSize		The size of the stack allocated to this task. The size
+*											of this will be cast to 'uint32_t'.
+*/
 typedef struct {
     TaskFunction_t taskFunc;
     uint32_t priority;
     size_t stackSize;
 } TaskDef_t;
 
+/**
+*	Createse a new task and adds it to the scheduler.
+*
+*	@param	taskDef		Pointer to the structure containing task details like
+*										function, priority and stack size.
+*
+*	@param	args			Pointer to the arguments that might be passed to the
+*										task function.
+*
+*	1.	Allocates memory for the task's stack from a static memory pool, using
+*			the stack size specified in the task definition.
+*				-	This retains 8 byte alignment due to how 'static_alloc' works.
+*	2.	Allocates memory for the task's TCB.
+*	3.	Initialises the TCB with the allocated stack, function, arguments and priority.
+*	4.	Adds the initialised task to the scheduler for execution.
+*/
 void OS_createTask(TaskDef_t *taskDef, void const * const args);
 void OS_createTask(TaskDef_t *taskDef, void const * const args) {
     // Allocate memory for the task's stack
     uint32_t *stack = (uint32_t *)static_alloc(taskDef->stackSize * sizeof(uint32_t));
-	
     // Allocate memory for the TCB
     OS_TCB_t *tcb = (OS_TCB_t *)static_alloc(sizeof(OS_TCB_t));
-
-    // Initialize the TCB with the provided stack and task details
+    // Initialise the TCB with the provided stack and task details
     OS_initialiseTCB(tcb, stack + taskDef->stackSize, taskDef->taskFunc, args, taskDef->priority);
-
     // Add the task to the scheduler
     OS_addTask(tcb);
 }
 
+/*=============================*/
+/*     	USER CONFIGURABLE   	 */
+/*			TASK IMPLEMENTATIONS	 */
+/*=============================*/
+
+/*	Declare and initialise different tasks	*/
 __attribute__((noreturn))
 static void task1(void const *const args) {
 	(void) args;
@@ -57,7 +105,7 @@ __attribute__((noreturn))
 static void task3(void const *const args) {
 	(void) args;
 	while (1) {
-		OS_sleep(100);
+		OS_sleep(300);
 		OS_mutex_acquire(&mutex);
 		//OS_semaphore_acquire(&semaphore);
 		printf("CCCCCCCC\r\n");
@@ -70,7 +118,7 @@ __attribute__((noreturn))
 static void task4(void const *const args) {
 	(void) args;
 	while (1) {
-		OS_sleep(100);
+		//OS_sleep(100);
 		OS_mutex_acquire(&mutex);
 		printf("DDDDDDDD\r\n");
 		OS_mutex_release(&mutex);
@@ -81,7 +129,7 @@ __attribute__((noreturn))
 static void task5(void const *const args) {
 	(void) args;
 	while (1) {
-		OS_sleep(100);
+		OS_sleep(150);
 		OS_mutex_acquire(&mutex);
 		printf("EEEEEEEE\r\n");
 		OS_mutex_release(&mutex);
@@ -93,30 +141,17 @@ static void task6(void const *const args) {
 	(void) args;
 	while (1) {
 		
-//		void *block1 = pool_allocate_from(0);
-//		if (block1) {
-//			printf("First block allocated at address %p\n", block1);
-//			//pool_deallocate_to(0, block1); // Deallocate back to pool 0
-//		}
-
-//		// Allocate another block from the same pool
-//		void *block2 = pool_allocate_from(0);
-//		if (block2) {
-//			printf("Second block allocated at address %p\n", block2);
-//			// Optional: Deallocation of block2
-//			//pool_deallocate_to(0, block2);
-//		}
-		
-		void *block3 = pool_allocate_from(2);
-		if (block3) {
-			printf("Third block allocated at address %p\n", block3);
-			//pool_deallocate_to(1, block3); // Deallocate back to pool 0
+		void *block1 = pool_allocate_from(0);
+		if (block1) {
+			printf("First block allocated at address %p\n", block1);
+			//pool_deallocate_to(0, block1); // Deallocate back to pool 0
 		}
-		
-		void *block4 = pool_allocate_from(2);
-		if (block4) {
-			printf("Fourth block allocated at address %p\n", block4);
-			//pool_deallocate_to(1, block4); // Deallocate back to pool 0
+
+		// Allocate another block from the same pool
+		void *block2 = pool_allocate_from(0);
+		if (block2) {
+			printf("Second block allocated at address %p\n", block2);
+			//pool_deallocate_to(0, block2);
 		}
 		
 	}
@@ -131,26 +166,7 @@ int main(void) {
 	
 	printf("\r\nDocetOS\r\n");
 
-	/* Reserve memory for two stacks and two TCBs.
-	   Remember that stacks must be 8-byte aligned. */
-//	static uint32_t stack1[128] __attribute__ (( aligned(8) ));
-//	static uint32_t stack2[128] __attribute__ (( aligned(8) ));
-//	static uint32_t stack3[128] __attribute__ (( aligned(8) ));
-//	static uint32_t stack4[128] __attribute__ (( aligned(8) ));
-//	static uint32_t stack5[128] __attribute__ (( aligned(8) ));
-//	static uint32_t stack6[128] __attribute__ (( aligned(8) ));
-//	static OS_TCB_t TCB1, TCB2, TCB3, TCB4, TCB5, TCB6;
-//	
-//	/* Initialise the TCBs using the two functions above */
-//	
-//	OS_initialiseTCB(&TCB1, stack1+128, task1, NULL, 4);
-//	OS_initialiseTCB(&TCB2, stack2+128, task2, NULL, 4);
-//	OS_initialiseTCB(&TCB3, stack3+128, task3, NULL, 4);
-//	OS_initialiseTCB(&TCB4, stack4+128, task4, NULL, 2);
-//	OS_initialiseTCB(&TCB5, stack5+128, task5, NULL, 2);
-//	OS_initialiseTCB(&TCB6, stack6+128, task6, NULL, 2);
-	
-	mempools_init();
+	/*	Configure tasks	*/
 	
 	TaskDef_t task1Def = {
 		.taskFunc = task1,
@@ -166,7 +182,7 @@ int main(void) {
 	
 	TaskDef_t task3Def = {
 		.taskFunc = task3,
-		.priority = 3,
+		.priority = 4,
 		.stackSize = 128
 	};
 	
@@ -188,24 +204,18 @@ int main(void) {
 		.stackSize = 128
 	};
 	
-	//OS_createTask(&task1Def, 0);
-	//OS_createTask(&task2Def, 0);
-	OS_createTask(&task3Def, 0);
-	OS_createTask(&task4Def, 0);
-	OS_createTask(&task5Def, 0);
-	//OS_createTask(&task6Def, 0);
+	/*	Add the tasks to the scheduler	*/
 	
-	/* Add the tasks to the scheduler */
+	OS_createTask(&task1Def, NULL);
+	//OS_createTask(&task2Def, NULL);
+	//OS_createTask(&task3Def, NULL);
+	//OS_createTask(&task4Def, NULL);
+	//OS_createTask(&task5Def, NULL);
+	//OS_createTask(&task6Def, NULL);
 	
-	//OS_addTask(&TCB1);
-	//OS_addTask(&TCB2);
-	//OS_addTask(&TCB3);
-	//OS_addTask(&TCB4);
-	//OS_addTask(&TCB5);
-	//OS_addTask(&TCB6);
+	/*	Initialise user's configured memory pools	*/
+	mempools_init();
 	
 	/* Start the OS */
-	
 	OS_start();
-	
 }
