@@ -41,7 +41,7 @@ typedef struct {
 static const mempool_config_t mempool_config[NUM_MEMORY_POOLS] = {
     {16, 20},  // Pool 0: 16 bytes, 20 blocks
     {32, 15},  // Pool 1: 32 bytes, 15 blocks
-    {64, 10}   // Pool 2: 64 bytes, 10 blocks
+    {64, 5}   // Pool 2: 64 bytes, 5 blocks
 };
 
 #endif /* CONFIG_H */
